@@ -32,16 +32,18 @@
     <PackageReference Include="magic.lambda.hyperlambda" Version="1.1.5" />
     <PackageReference Include="magic.lambda.io" Version="1.1.5" />
     <PackageReference Include="magic.lambda.json" Version="1.1.5" />
-    <PackageReference Include="magic.lambda.logging" Version="1.1.5" />
+    <PackageReference Include="magic.lambda.logging" Version="1.1.6" />
     <PackageReference Include="magic.lambda.math" Version="1.1.5" />
     <PackageReference Include="magic.lambda.mysql" Version="1.1.6" />
     <PackageReference Include="magic.lambda.slots" Version="1.1.5" />
     <PackageReference Include="magic.lambda.strings" Version="1.1.5" />
     <PackageReference Include="magic.io" Version="1.1.5" />
-    <PackageReference Include="magic.lambda.mssql" Version="1.1.6" />
-    <PackageReference Include="magic.endpoint" Version="1.1.5" />
+    <PackageReference Include="magic.lambda.mssql" Version="1.1.7" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="internals\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\magic.endpoint\magic.endpoint\magic.endpoint.controller\magic.endpoint.controller.csproj" />
   </ItemGroup>
 </Project>

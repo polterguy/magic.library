@@ -21,6 +21,7 @@ using magic.signals.contracts;
 using magic.endpoint.services;
 using magic.library.internals;
 using magic.endpoint.contracts;
+using magic.lambda.io.contracts;
 
 namespace magic.library
 {
@@ -64,10 +65,15 @@ namespace magic.library
             services.AddTransient<IFileService, FileService>();
             services.AddSingleton<IAuthorize>((svc) => new AuthorizeOnlyRoles("root", "admin"));
 
+            // Wiring up magic.lambda.io.
+            services.AddTransient<IRootResolver, RootResolver>();
+
             // Making sure the folder for dynamic files exists on server.
             var rootFolder = (configuration["io:root-folder"] ?? "~/files")
                 .Replace("~", Directory.GetCurrentDirectory())
                 .TrimEnd('/') + "/";
+
+            // Ensuring root folder for dynamica files exists on server.
             if (!Directory.Exists(rootFolder))
                 Directory.CreateDirectory(rootFolder);
 
@@ -75,6 +81,7 @@ namespace magic.library
             services.AddTransient<IExecutor, Executor>();
 
             // Wiring up magic.signals.
+            LoadAssemblies();
             services.AddTransient<ISignaler, Signaler>();
             services.AddSingleton<ISignalsProvider>(new SignalsProvider(Slots(services)));
 
@@ -145,6 +152,34 @@ namespace magic.library
                 services.AddTransient(idx);
             }
             return result;
+        }
+
+        /*
+         * Helper method to load up all assemblies into AppDomain, such that
+         * we have access to all assemblies handling signals.
+         */
+        static void LoadAssemblies()
+        {
+            /*
+             * Unfortunately, we have to touch every assembly that we're only
+             * using slots from, and not directly referencing, since otherwise
+             * the .Net compiler will optimize these assemblies completely away
+             * for us, and no slots will be registered from these assemblies,
+             * or any other code executing either.
+             */
+            var type01 = typeof(lambda.Eval);
+            var type02 = typeof(lambda.auth.CreateTicket);
+            var type03 = typeof(lambda.config.ConfigGet);
+            var type04 = typeof(lambda.crypto.Hash);
+            var type05 = typeof(lambda.http.HttpDelete);
+            var type06 = typeof(lambda.hyperlambda.Hyper);
+            var type07 = typeof(lambda.json.FromLambda);
+            var type08 = typeof(lambda.logging.LogDebug);
+            var type09 = typeof(lambda.math.Addition);
+            var type10 = typeof(lambda.mssql.Connect);
+            var type11 = typeof(lambda.mysql.Connect);
+            var type12 = typeof(lambda.slots.SlotsCreate);
+            var type13 = typeof(lambda.strings.Concat);
         }
 
         #endregion
