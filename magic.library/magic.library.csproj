@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <PackageReference Include="magic.lambda" Version="1.1.6" />
-    <PackageReference Include="magic.lambda.auth" Version="1.1.5" />
     <PackageReference Include="magic.lambda.config" Version="1.1.5" />
     <PackageReference Include="magic.lambda.crypto" Version="1.1.5" />
     <PackageReference Include="magic.lambda.http" Version="1.1.5" />
@@ -35,15 +34,14 @@
     <PackageReference Include="magic.lambda.logging" Version="1.1.6" />
     <PackageReference Include="magic.lambda.math" Version="1.1.5" />
     <PackageReference Include="magic.lambda.mysql" Version="1.1.6" />
-    <PackageReference Include="magic.lambda.slots" Version="1.1.5" />
+    <PackageReference Include="magic.lambda.slots" Version="1.1.6" />
     <PackageReference Include="magic.lambda.strings" Version="1.1.5" />
     <PackageReference Include="magic.io" Version="1.1.5" />
     <PackageReference Include="magic.lambda.mssql" Version="1.1.7" />
+    <PackageReference Include="magic.lambda.auth" Version="1.1.6" />
+    <PackageReference Include="magic.endpoint" Version="1.1.6" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="internals\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\magic.endpoint\magic.endpoint\magic.endpoint.controller\magic.endpoint.controller.csproj" />
   </ItemGroup>
 </Project>

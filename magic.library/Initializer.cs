@@ -22,6 +22,7 @@ using magic.endpoint.services;
 using magic.library.internals;
 using magic.endpoint.contracts;
 using magic.lambda.io.contracts;
+using magic.node.extensions.hyperlambda;
 
 namespace magic.library
 {
@@ -124,16 +125,51 @@ namespace magic.library
         }
 
         /// <summary>
-        /// Initializing Swagger.
+        /// Initializing application builder.
         /// </summary>
         /// <param name="app">Application builder for your application.</param>
-        public static void InitializeSwagger(IApplicationBuilder app)
+        public static void InitalizeApp(IApplicationBuilder app)
         {
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Magic"));
+
+            // Evaluating all startup files.
+            var configuration = app.ApplicationServices.GetService<IConfiguration>();
+            var signaler = app.ApplicationServices.GetService<ISignaler>();
+            var rootFolder = (configuration["io:root-folder"] ?? "~/files")
+                .Replace("~", Directory.GetCurrentDirectory())
+                .TrimEnd('/') + "/";
+            foreach (var idxModules in Directory.GetDirectories(rootFolder + "modules/"))
+            {
+                foreach (var idxModuleFolder in Directory.GetDirectories(idxModules))
+                {
+                    var folder = new DirectoryInfo(idxModuleFolder);
+                    if (folder.Name == "magic.startup")
+                        ExecuteStartupFiles(signaler, idxModuleFolder);
+                }
+            }
         }
 
         #region [ -- Private helper methods -- ]
+
+        static void ExecuteStartupFiles(ISignaler signaler, string folder)
+        {
+            // Startup folder, now executing all Hyperlambda files inside of it.
+            foreach (var idxFile in Directory.GetFiles(folder, "*.hl"))
+            {
+                using (var stream = File.OpenRead(idxFile))
+                {
+                    var lambda = new Parser(stream).Lambda();
+                    signaler.Signal("eval", lambda);
+                }
+            }
+
+            // Recursively checking sub folders.
+            foreach (var idxFolder in Directory.GetDirectories(folder))
+            {
+                ExecuteStartupFiles(signaler, idxFolder);
+            }
+        }
 
         /*
          * Finds all types in AppDomain that implements ISlot and that is not
