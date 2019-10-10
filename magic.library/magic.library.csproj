@@ -24,22 +24,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="magic.lambda" Version="1.1.9" />
-    <PackageReference Include="magic.lambda.config" Version="1.1.6" />
-    <PackageReference Include="magic.lambda.crypto" Version="1.1.6" />
-    <PackageReference Include="magic.lambda.http" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.hyperlambda" Version="1.1.5" />
-    <PackageReference Include="magic.lambda.io" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.json" Version="1.1.6" />
-    <PackageReference Include="magic.lambda.logging" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.math" Version="1.1.6" />
-    <PackageReference Include="magic.lambda.mysql" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.slots" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.strings" Version="1.1.6" />
-    <PackageReference Include="magic.io" Version="1.1.6" />
-    <PackageReference Include="magic.lambda.mssql" Version="1.2.0" />
-    <PackageReference Include="magic.lambda.auth" Version="1.1.7" />
-    <PackageReference Include="magic.endpoint" Version="1.1.6" />
+    <PackageReference Include="magic.lambda" Version="1.2.1" />
+    <PackageReference Include="magic.lambda.config" Version="1.1.7" />
+    <PackageReference Include="magic.lambda.crypto" Version="1.1.7" />
+    <PackageReference Include="magic.lambda.http" Version="1.1.8" />
+    <PackageReference Include="magic.lambda.hyperlambda" Version="1.1.8" />
+    <PackageReference Include="magic.lambda.io" Version="1.1.8" />
+    <PackageReference Include="magic.lambda.json" Version="1.1.7" />
+    <PackageReference Include="magic.lambda.logging" Version="1.1.8" />
+    <PackageReference Include="magic.lambda.math" Version="1.1.7" />
+    <PackageReference Include="magic.lambda.mysql" Version="1.1.8" />
+    <PackageReference Include="magic.lambda.slots" Version="1.1.8" />
+    <PackageReference Include="magic.lambda.strings" Version="1.1.7" />
+    <PackageReference Include="magic.io" Version="1.1.7" />
+    <PackageReference Include="magic.lambda.mssql" Version="1.2.1" />
+    <PackageReference Include="magic.signals" Version="1.1.9" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="magic.lambda.auth" Version="1.1.8" />
+    <PackageReference Include="magic.endpoint" Version="1.1.9" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="internals\" />

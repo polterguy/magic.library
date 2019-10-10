@@ -6,14 +6,16 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Text;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using log4net;
-using Swashbuckle.AspNetCore.Swagger;
 using magic.io.services;
 using magic.io.contracts;
 using magic.signals.services;
@@ -22,6 +24,8 @@ using magic.endpoint.services;
 using magic.library.internals;
 using magic.endpoint.contracts;
 using magic.lambda.io.contracts;
+using magic.lambda.auth.services;
+using magic.lambda.auth.contracts;
 using magic.node.extensions.hyperlambda;
 
 namespace magic.library
@@ -65,12 +69,13 @@ namespace magic.library
             // Wiring up magic.io.
             services.AddTransient<IFileService, FileService>();
             services.AddSingleton<IAuthorize>((svc) => new AuthorizeOnlyRoles("root", "admin"));
+            services.AddTransient<ITicketProvider, HttpTicketProvider>();
 
             // Wiring up magic.lambda.io.
             services.AddTransient<IRootResolver, RootResolver>();
 
             // Making sure the folder for dynamic files exists on server.
-            var rootFolder = (configuration["io:root-folder"] ?? "~/files")
+            var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files")
                 .Replace("~", Directory.GetCurrentDirectory())
                 .TrimEnd('/') + "/";
 
@@ -81,6 +86,9 @@ namespace magic.library
             // Wiring up magic.endpoint.
             services.AddTransient<IExecutor, Executor>();
 
+            // Wiring up magic.lambda.logging.
+            services.AddTransient<magic.lambda.logging.ILog, Logger>();
+
             // Wiring up magic.signals.
             LoadAssemblies();
             services.AddTransient<ISignaler, Signaler>();
@@ -88,39 +96,25 @@ namespace magic.library
 
             // Parts of Magic depends upon having access to the IHttpContextAccessor.
             services.AddHttpContextAccessor();
-        }
 
-        /// <summary>
-        /// Initializing Swagger to create Web API documentation dynamically.
-        /// </summary>
-        /// <param name="services">Service collection.</param>
-        public static void InitializeSwagger(IServiceCollection services)
-        {
-            services.AddSwaggerGen(swag =>
+            var secret = configuration["magic:auth:secret"];
+            var key = Encoding.ASCII.GetBytes(secret);
+            services.AddAuthentication(x =>
             {
-                swag.SwaggerDoc("v1", new Info
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    Title = "Magic",
-                    Version = "v1",
-                    Description = "An ASP.NET Web API simplification",
-                    License = new License
-                    {
-                        Name = "Affero GPL + Proprietary commercial (Closed Source) for a fee",
-                        Url = "https://polterguy.github.io",
-                    },
-                    Contact = new Contact
-                    {
-                        Name = "Thomas Hansen",
-                        Email = "thomas@gaiasoul.com",
-                        Url = "https://polterguy.github.io",
-                    },
-                });
-                foreach (var idxFile in Directory.GetFiles(AppContext.BaseDirectory, "*.xml"))
-                {
-                    swag.IncludeXmlComments(idxFile);
-                }
-                swag.OperationFilter<FileUploadOperation>();
-                swag.DocumentFilter<DynamicEndpointOperation>();
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                };
             });
         }
 
@@ -130,13 +124,10 @@ namespace magic.library
         /// <param name="app">Application builder for your application.</param>
         public static void InitalizeApp(IApplicationBuilder app)
         {
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Magic"));
-
             // Evaluating all startup files.
             var configuration = app.ApplicationServices.GetService<IConfiguration>();
             var signaler = app.ApplicationServices.GetService<ISignaler>();
-            var rootFolder = (configuration["io:root-folder"] ?? "~/files")
+            var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files")
                 .Replace("~", Directory.GetCurrentDirectory())
                 .TrimEnd('/') + "/";
             foreach (var idxModules in Directory.GetDirectories(rootFolder + "modules/"))
@@ -203,19 +194,23 @@ namespace magic.library
              * for us, and no slots will be registered from these assemblies,
              * or any other code executing either.
              */
-            var type01 = typeof(lambda.Eval);
-            var type02 = typeof(lambda.auth.CreateTicket);
-            var type03 = typeof(lambda.config.ConfigGet);
-            var type04 = typeof(lambda.crypto.Hash);
-            var type05 = typeof(lambda.http.HttpDelete);
-            var type06 = typeof(lambda.hyperlambda.Hyper);
-            var type07 = typeof(lambda.json.FromLambda);
-            var type08 = typeof(lambda.logging.LogDebug);
-            var type09 = typeof(lambda.math.Addition);
-            var type10 = typeof(lambda.mssql.Connect);
-            var type11 = typeof(lambda.mysql.Connect);
-            var type12 = typeof(lambda.slots.SlotsCreate);
-            var type13 = typeof(lambda.strings.Concat);
+            var types = new Type[]
+            {
+                typeof(lambda.Eval),
+                typeof(lambda.auth.CreateTicket),
+                typeof(lambda.config.ConfigGet),
+                typeof(lambda.crypto.Hash),
+                typeof(lambda.http.HttpDelete),
+                typeof(lambda.hyperlambda.Lambda2Hyper),
+                typeof(lambda.json.Json2Lambda),
+                typeof(lambda.logging.LogDebug),
+                typeof(lambda.math.Addition),
+                typeof(lambda.mssql.Connect),
+                typeof(lambda.mysql.Connect),
+                typeof(lambda.slots.Create),
+                typeof(lambda.strings.Concat),
+                typeof(io.controller.FilesController)
+            };
         }
 
         #endregion
