@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>magic.library</PackageId>
     <Authors>Thomas Hansen</Authors>
@@ -42,6 +42,10 @@
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="magic.lambda.auth" Version="1.1.8" />
     <PackageReference Include="magic.endpoint" Version="1.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.App">
+      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="internals\" />
