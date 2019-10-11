@@ -1,6 +1,6 @@
 ﻿/*
- * Magic, Copyright(c) Thomas Hansen 2019 - thomas@gaiasoul.com
- * Licensed as Affero GPL unless an explicitly proprietary license has been obtained.
+ * Magic, Copyright(c) Thomas Hansen 2019, thomas@gaiasoul.com, all rights reserved.
+ * See the enclosed LICENSE file for details.
  */
 
 using System;
@@ -47,14 +47,16 @@ namespace magic.library
         /// </summary>
         /// <param name="services">Your service collection.</param>
         /// <param name="configuration">The configuration for your app.</param>
+        /// <param name="licenseKey">The license key associated with
         public static void AddMagic(
             this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            string licenseKey = null)
         {
             services.AddMagicLog4netServices();
             services.AddMagicFileServices(configuration);
             services.AddMagicAuthorization(configuration);
-            services.AddMagicSignals();
+            services.AddMagicSignals(licenseKey);
             services.AddMagicEndpoints();
         }
 
@@ -221,7 +223,11 @@ namespace magic.library
         /// Configures magic.signals such that you can signal slots.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicSignals(this IServiceCollection services)
+        /// <param name="licenseKey">The license key associated with
+        /// your installation.</param>
+        public static void AddMagicSignals(
+            this IServiceCollection services,
+            string licenseKey = null)
         {
             /*
              * Unfortunately, we have to touch every assembly that we're only
@@ -269,6 +275,12 @@ namespace magic.library
             _logger?.Info("Configuring magic.signals to use its default service implementations");
             services.AddTransient<ISignaler, Signaler>();
             services.AddSingleton<ISignalsProvider>(new SignalsProvider(Slots(services)));
+
+            /*
+             * Checking if caller supplied a license key.
+             */
+            if (!string.IsNullOrEmpty(licenseKey))
+                Signaler.LicenseKey = licenseKey;
         }
 
         /// <summary>
