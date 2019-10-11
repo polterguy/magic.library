@@ -12,7 +12,7 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/polterguy/magic.library/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://polterguy.github.io/favicon.ico</PackageIconUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.1.6</PackageVersion>
+    <PackageVersion>1.1.7</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library.git</RepositoryUrl>
@@ -24,28 +24,29 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="magic.lambda" Version="1.2.1" />
-    <PackageReference Include="magic.lambda.config" Version="1.1.7" />
+    <PackageReference Include="magic.lambda" Version="1.2.2" />
+    <PackageReference Include="magic.lambda.config" Version="1.1.8" />
     <PackageReference Include="magic.lambda.crypto" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.http" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.hyperlambda" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.io" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.json" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.logging" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.math" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.mysql" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.slots" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.strings" Version="1.1.7" />
-    <PackageReference Include="magic.io" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.mssql" Version="1.2.1" />
-    <PackageReference Include="magic.signals" Version="1.1.9" />
+    <PackageReference Include="magic.lambda.http" Version="1.1.9" />
+    <PackageReference Include="magic.lambda.hyperlambda" Version="1.1.9" />
+    <PackageReference Include="magic.lambda.io" Version="1.1.9" />
+    <PackageReference Include="magic.lambda.json" Version="1.1.8" />
+    <PackageReference Include="magic.lambda.logging" Version="1.1.9" />
+    <PackageReference Include="magic.lambda.math" Version="1.1.8" />
+    <PackageReference Include="magic.lambda.mysql" Version="1.1.9" />
+    <PackageReference Include="magic.lambda.slots" Version="1.1.9" />
+    <PackageReference Include="magic.lambda.strings" Version="1.1.8" />
+    <PackageReference Include="magic.io" Version="1.1.8" />
+    <PackageReference Include="magic.lambda.mssql" Version="1.2.2" />
+    <PackageReference Include="magic.signals" Version="1.2.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="magic.lambda.auth" Version="1.1.8" />
-    <PackageReference Include="magic.endpoint" Version="1.1.9" />
+    <PackageReference Include="magic.lambda.auth" Version="1.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.App">
       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
       <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
     </PackageReference>
+    <PackageReference Include="magic.endpoint" Version="1.2.1" />
+    <PackageReference Include="magic.endpoint.services" Version="1.2.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="internals\" />

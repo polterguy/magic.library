@@ -48,6 +48,7 @@ namespace magic.library
         /// <param name="services">Your service collection.</param>
         /// <param name="configuration">The configuration for your app.</param>
         /// <param name="licenseKey">The license key associated with
+        /// your server.</param>
         public static void AddMagic(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -216,7 +217,7 @@ namespace magic.library
         public static void AddMagicEndpoints(this IServiceCollection services)
         {
             _logger?.Info("Configures magic.endpoint to use its default executor");
-            services.AddTransient<IExecutor, Executor>();
+            services.AddTransient<IExecutorAsync, ExecutorAsync>();
         }
 
         /// <summary>
