@@ -7,16 +7,16 @@
     <Authors>Thomas Hansen</Authors>
     <Company>Thomas Hansen</Company>
     <Copyright>Thomas Hansen, thomas@gaiasoul.com</Copyright>
-    <Description>Helper project for Magic to wire up everything in Magic.</Description>
+    <Description>Helper project for Magic to wire up everything easily by simply adding one package, and invoking two simple methods. When using Magic, this is (probably) the only package you should actually add, since this package pulls in everything else you'll need automatically.</Description>
     <PackageProjectUrl>https://github.com/polterguy/magic.library</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/polterguy/magic.library/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://polterguy.github.io/favicon.ico</PackageIconUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.1.7</PackageVersion>
+    <PackageVersion>2.0.0</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library.git</RepositoryUrl>
-    <PackageTags>string manipulation</PackageTags>
+    <PackageTags>wiring, magic, DSL, data, CRUD</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -24,31 +24,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="magic.lambda" Version="1.2.2" />
-    <PackageReference Include="magic.lambda.config" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.crypto" Version="1.1.7" />
-    <PackageReference Include="magic.lambda.http" Version="1.1.9" />
-    <PackageReference Include="magic.lambda.hyperlambda" Version="1.1.9" />
-    <PackageReference Include="magic.lambda.io" Version="1.1.9" />
-    <PackageReference Include="magic.lambda.json" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.logging" Version="1.1.9" />
-    <PackageReference Include="magic.lambda.math" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.mysql" Version="1.1.9" />
-    <PackageReference Include="magic.lambda.slots" Version="1.1.9" />
-    <PackageReference Include="magic.lambda.strings" Version="1.1.8" />
-    <PackageReference Include="magic.io" Version="1.1.8" />
-    <PackageReference Include="magic.lambda.mssql" Version="1.2.2" />
-    <PackageReference Include="magic.signals" Version="1.2.0" />
+    <PackageReference Include="magic.lambda" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.config" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.crypto" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.http" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.hyperlambda" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.io" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.json" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.logging" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.math" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.mysql" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.slots" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.strings" Version="2.0.0" />
+    <PackageReference Include="magic.io" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.mssql" Version="2.0.0" />
+    <PackageReference Include="magic.signals" Version="2.0.0" />
+    <PackageReference Include="magic.lambda.auth" Version="2.0.0" />
+    <PackageReference Include="magic.endpoint" Version="2.0.0" />
+    <PackageReference Include="magic.endpoint.services" Version="2.0.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="magic.lambda.auth" Version="1.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.App">
       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
       <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
     </PackageReference>
-    <PackageReference Include="magic.endpoint" Version="1.2.1" />
-    <PackageReference Include="magic.endpoint.services" Version="1.2.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="internals\" />
   </ItemGroup>
 </Project>
