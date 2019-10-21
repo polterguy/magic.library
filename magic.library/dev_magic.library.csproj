@@ -2,25 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>magic.library</PackageId>
-    <Authors>Thomas Hansen</Authors>
-    <Company>Thomas Hansen</Company>
-    <Copyright>Thomas Hansen, thomas@gaiasoul.com</Copyright>
-    <Description>Helper project for Magic to wire up everything easily by simply adding one package, and invoking two simple methods. When using Magic, this is (probably) the only package you should actually add, since this package pulls in everything else you'll need automatically.</Description>
-    <PackageProjectUrl>https://github.com/polterguy/magic.library</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/polterguy/magic.library/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>https://polterguy.github.io/favicon.ico</PackageIconUrl>
-    <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>2.1.4</PackageVersion>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/polterguy/magic.library.git</RepositoryUrl>
-    <PackageTags>wiring, magic, DSL, data, CRUD</PackageTags>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin/Release/netstandard2.0/magic.library.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -52,4 +33,5 @@
     <ProjectReference Include="..\..\magic.lambda.validators\magic.lambda.validators\dev_magic.lambda.validators.csproj" />
     <ProjectReference Include="..\..\magic.lambda\magic.lambda\dev_magic.lambda.csproj" />
   </ItemGroup>
+
 </Project>
