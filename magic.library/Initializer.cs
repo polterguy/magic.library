@@ -264,7 +264,8 @@ namespace magic.library
                 typeof(lambda.mysql.Connect),
                 typeof(lambda.slots.Create),
                 typeof(lambda.strings.Concat),
-                typeof(io.controller.FilesController)
+                typeof(io.controller.FilesController),
+                typeof(ExecutorAsync)
             };
 
             /*
