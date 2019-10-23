@@ -161,9 +161,7 @@ namespace magic.library
         /// </summary>
         /// <param name="services">Your service collection.</param>
         /// <param name="configuration">The configuration for your app.</param>
-        public static void AddMagicAuthorization(
-            this IServiceCollection services,
-            IConfiguration configuration)
+        public static void AddMagicAuthorization(this IServiceCollection services, IConfiguration configuration)
         {
             _logger?.Info("Configures magic.lambda.auth to use its default ticket provider");
 
@@ -240,8 +238,7 @@ namespace magic.library
         /// <param name="services">Your service collection.</param>
         /// <param name="licenseKey">The license key associated with
         /// your installation.</param>
-        public static void AddMagicSignals(this IServiceCollection services,
-            string licenseKey = null)
+        public static void AddMagicSignals(this IServiceCollection services, string licenseKey = null)
         {
             /*
              * Unfortunately, we have to touch every assembly that we're only
