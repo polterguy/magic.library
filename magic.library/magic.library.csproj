@@ -12,7 +12,7 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/polterguy/magic.library/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://polterguy.github.io/favicon.ico</PackageIconUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>2.1.4</PackageVersion>
+    <PackageVersion>3.0.0</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library.git</RepositoryUrl>
@@ -24,25 +24,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="magic.lambda" Version="2.0.2" />
-    <PackageReference Include="magic.lambda.config" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.crypto" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.http" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.hyperlambda" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.io" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.json" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.logging" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.math" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.mysql" Version="2.0.5" />
-    <PackageReference Include="magic.lambda.slots" Version="2.0.3" />
-    <PackageReference Include="magic.lambda.strings" Version="2.0.2" />
-    <PackageReference Include="magic.lambda.validators" Version="2.0.0" />
-    <PackageReference Include="magic.io" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.mssql" Version="2.0.6" />
-    <PackageReference Include="magic.signals" Version="2.0.1" />
-    <PackageReference Include="magic.lambda.auth" Version="2.0.2" />
-    <PackageReference Include="magic.endpoint" Version="2.0.4" />
-    <PackageReference Include="magic.endpoint.services" Version="2.0.4" />
+    <PackageReference Include="magic.lambda" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.config" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.crypto" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.http" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.hyperlambda" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.io" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.json" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.logging" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.math" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.mysql" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.slots" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.strings" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.validators" Version="3.0.0" />
+    <PackageReference Include="magic.io" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.mssql" Version="3.0.0" />
+    <PackageReference Include="magic.signals" Version="3.0.0" />
+    <PackageReference Include="magic.lambda.auth" Version="3.0.0" />
+    <PackageReference Include="magic.endpoint" Version="3.0.0" />
+    <PackageReference Include="magic.endpoint.services" Version="3.0.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.App">
       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
