@@ -30,6 +30,7 @@ using magic.lambda.io.contracts;
 using magic.lambda.auth.services;
 using magic.lambda.auth.contracts;
 using magic.node.extensions.hyperlambda;
+using magic.endpoint.services.utilities;
 
 namespace magic.library
 {
@@ -58,7 +59,7 @@ namespace magic.library
             services.AddMagicFileServices(configuration);
             services.AddMagicAuthorization(configuration);
             services.AddMagicSignals(licenseKey);
-            services.AddMagicEndpoints();
+            services.AddMagicEndpoints(configuration);
         }
 
         /// <summary>
@@ -214,10 +215,23 @@ namespace magic.library
         /// Configures magic.endpoint to use its default service implementation.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicEndpoints(this IServiceCollection services)
+        public static void AddMagicEndpoints(this IServiceCollection services, IConfiguration configuration)
         {
             _logger?.Info("Configures magic.endpoint to use its default executor");
-            services.AddTransient<IExecutorAsync, ExecutorAsync>();
+
+            /*
+             * Figuring out which folder to resolve dynamic Hyperlambda files from,
+             * and making sure we configure the Hyperlambda resolver to use the correct
+             * folder.
+             */
+            var rootFolder = configuration["magic:endpoint:root-folder"] ?? "~/files/";
+            rootFolder = rootFolder
+                .Replace("~", Directory.GetCurrentDirectory())
+                .Replace("\\", "/");
+            Utilities.RootFolder = rootFolder;
+
+            // Configuring the default executor to execute dynamic URLs.
+            services.AddTransient<IExecutorAsync>(svc => new ExecutorAsync(svc.GetRequiredService<ISignaler>()));
         }
 
         /// <summary>
@@ -226,8 +240,7 @@ namespace magic.library
         /// <param name="services">Your service collection.</param>
         /// <param name="licenseKey">The license key associated with
         /// your installation.</param>
-        public static void AddMagicSignals(
-            this IServiceCollection services,
+        public static void AddMagicSignals(this IServiceCollection services,
             string licenseKey = null)
         {
             /*
