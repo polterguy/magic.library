@@ -21,6 +21,8 @@ using log4net;
 using Newtonsoft.Json.Linq;
 using magic.io.services;
 using magic.io.contracts;
+using magic.http.services;
+using magic.http.contracts;
 using magic.signals.services;
 using magic.signals.contracts;
 using magic.endpoint.services;
@@ -100,6 +102,15 @@ namespace magic.library
              * entries, when for instance the [log.info] slot is invoked.
              */
             services.AddTransient<lambda.logging.ILog, Logger>();
+        }
+
+        /// <summary>
+        /// Making sure Magic is able to invoke HTTP REST endpoints.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddMagicHttp(this IServiceCollection services)
+        {
+            services.AddTransient<IHttpClient, HttpClient>();
         }
 
         /// <summary>
@@ -253,6 +264,7 @@ namespace magic.library
             {
                 typeof(lambda.Eval),
                 typeof(lambda.auth.CreateTicket),
+                typeof(lambda.http.HttpGet),
                 typeof(lambda.config.ConfigGet),
                 typeof(lambda.crypto.Hash),
                 typeof(lambda.http.HttpDelete),
