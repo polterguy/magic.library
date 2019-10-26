@@ -224,6 +224,7 @@ namespace magic.library
         /// Configures magic.endpoint to use its default service implementation.
         /// </summary>
         /// <param name="services">Your service collection.</param>
+        /// <param name="configuration">Your apps configuration.</param>
         public static void AddMagicEndpoints(this IServiceCollection services, IConfiguration configuration)
         {
             _logger?.Info("Configures magic.endpoint to use its default executor");
