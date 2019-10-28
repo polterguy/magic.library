@@ -186,7 +186,7 @@ namespace magic.library
 
             /*
              * Parts of Magic depends upon having access to
-             * the IHttpContextAccessor,more speifically the above
+             * the IHttpContextAccessor, more speifically the above
              * HttpTicketProvider service implementation.
              */
             services.AddHttpContextAccessor();
@@ -266,11 +266,11 @@ namespace magic.library
             {
                 typeof(lambda.Eval),
                 typeof(lambda.auth.CreateTicket),
-                typeof(lambda.http.HttpGet),
                 typeof(lambda.config.ConfigGet),
                 typeof(lambda.crypto.Hash),
-                typeof(lambda.http.HttpDelete),
+                typeof(lambda.http.HttpGet),
                 typeof(lambda.hyperlambda.Lambda2Hyper),
+                typeof(lambda.io.files.CopyFile),
                 typeof(lambda.json.Json2Lambda),
                 typeof(lambda.logging.LogDebug),
                 typeof(lambda.math.Addition),
@@ -278,6 +278,7 @@ namespace magic.library
                 typeof(lambda.mysql.Connect),
                 typeof(lambda.slots.Create),
                 typeof(lambda.strings.Concat),
+                typeof(lambda.validators.ValidateDate),
                 typeof(io.controller.FilesController),
                 typeof(ExecutorAsync)
             };
