@@ -327,7 +327,6 @@ namespace magic.library
         /// Traps all unhandled exceptions, logs them to your log files using
         /// log4net (if configured), and returns the exception message back
         /// to the client as a JSON response.
-        /// Notice, you'd probably not want to use this feature in production.
         /// </summary>
         /// <param name="app">The application builder of your app.</param>
         public static void UseMagicExceptions(this IApplicationBuilder app)
@@ -349,11 +348,18 @@ namespace magic.library
                         _logger.Error("At path: " + ex.Path);
                         _logger.Error(msg, ex.Error);
                     }
+#if DEBUG
                     var response = new JObject
                     {
                         ["message"] = msg,
                         ["stack-trace"] = ex.Error.StackTrace,
                     };
+#else
+                    var response = new JObject
+                    {
+                        ["message"] = "Guru meditation, come back when Universe is in order!"
+                    };
+#endif
                     await context.Response.WriteAsync(
                         response.ToString(Newtonsoft.Json.Formatting.Indented));
                 }
@@ -373,21 +379,28 @@ namespace magic.library
         /// Evaluates all Magic Hyperlambda module startup files, that are
         /// inside Magic's dynamic "modules/xxx/magic.startup/" folder, 
         /// </summary>
-        /// <param name="app"></param>
-        /// <param name="configuration"></param>
+        /// <param name="app">Your application builder.</param>
+        /// <param name="configuration">Your app's configuration.</param>
         public static void UseMagicStartupFiles(
             this IApplicationBuilder app,
             IConfiguration configuration)
         {
-            // Evaluating all startup files.
+            // Creating a signaler and figuring out root path for dynamic Hyperlambda files.
             var signaler = app.ApplicationServices.GetService<ISignaler>();
             var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files")
                 .Replace("~", Directory.GetCurrentDirectory())
                 .TrimEnd('/') + "/";
+
+            // Retrieving all folders inside of our "/modules/" folder.
             foreach (var idxModules in Directory.GetDirectories(rootFolder + "modules/"))
             {
+                // Finding all folders inside of the currently iterated folder inside of "/modules/".
                 foreach (var idxModuleFolder in Directory.GetDirectories(idxModules))
                 {
+                    /*
+                     * Checking if this is a "startup folder", at which point we
+                     * execute all Hyperlambda files (recursively) inside of it.
+                     */
                     var folder = new DirectoryInfo(idxModuleFolder);
                     if (folder.Name == "magic.startup")
                         ExecuteStartupFiles(signaler, idxModuleFolder);
@@ -395,16 +408,12 @@ namespace magic.library
             }
         }
 
-        /// <summary>
-        /// Initializing application builder.
-        /// </summary>
-        /// <param name="app">Application builder for your application.</param>
-        public static void InitalizeApp(IApplicationBuilder app)
-        {
-        }
+#region [ -- Private helper methods -- ]
 
-        #region [ -- Private helper methods -- ]
-
+        /*
+         * Will recursively execute every single Hyperlambda file inside of
+         * the specified folder.
+         */
         static void ExecuteStartupFiles(ISignaler signaler, string folder)
         {
             // Startup folder, now executing all Hyperlambda files inside of it.
@@ -443,6 +452,6 @@ namespace magic.library
             return result;
         }
 
-        #endregion
+#endregion
     }
 }
