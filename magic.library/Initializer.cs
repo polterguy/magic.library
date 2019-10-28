@@ -57,11 +57,12 @@ namespace magic.library
             IConfiguration configuration,
             string licenseKey = null)
         {
+            services.AddMagicHttp();
             services.AddMagicLog4netServices();
-            services.AddMagicFileServices(configuration);
-            services.AddMagicAuthorization(configuration);
             services.AddMagicSignals(licenseKey);
             services.AddMagicEndpoints(configuration);
+            services.AddMagicFileServices(configuration);
+            services.AddMagicAuthorization(configuration);
         }
 
         /// <summary>
