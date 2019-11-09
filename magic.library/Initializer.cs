@@ -307,7 +307,7 @@ namespace magic.library
              * Checking if caller supplied a license key.
              */
             if (!string.IsNullOrEmpty(licenseKey))
-                Signaler.LicenseKey = licenseKey;
+                Signaler.SetLicenseKey(licenseKey);
         }
 
         /// <summary>
