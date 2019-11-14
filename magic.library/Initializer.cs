@@ -23,6 +23,7 @@ using magic.io.services;
 using magic.io.contracts;
 using magic.http.services;
 using magic.http.contracts;
+using magic.lambda.scheduler;
 using magic.signals.services;
 using magic.signals.contracts;
 using magic.endpoint.services;
@@ -63,6 +64,13 @@ namespace magic.library
             services.AddMagicEndpoints(configuration);
             services.AddMagicFileServices(configuration);
             services.AddMagicAuthorization(configuration);
+            services.AddMagicScheduler(configuration);
+        }
+
+        public static void AddMagicScheduler(this IServiceCollection services, IConfiguration configuration)
+        {
+            var tasksFile = configuration["magic:scheduler:tasks-file"] ?? "~/tasks.hl";
+            services.AddHostedService((svc) => new BackgroundService(tasksFile));
         }
 
         /// <summary>
