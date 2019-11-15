@@ -70,7 +70,8 @@ namespace magic.library
         public static void AddMagicScheduler(this IServiceCollection services, IConfiguration configuration)
         {
             var tasksFile = configuration["magic:scheduler:tasks-file"] ?? "~/tasks.hl";
-            services.AddHostedService((svc) => new BackgroundService(tasksFile));
+            tasksFile = tasksFile.Replace("~", AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/").TrimEnd('/'));
+            services.AddHostedService((svc) => new BackgroundService(svc, tasksFile));
         }
 
         /// <summary>
