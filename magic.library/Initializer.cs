@@ -23,7 +23,6 @@ using magic.io.services;
 using magic.io.contracts;
 using magic.http.services;
 using magic.http.contracts;
-using magic.lambda.scheduler;
 using magic.signals.services;
 using magic.signals.contracts;
 using magic.endpoint.services;
@@ -32,6 +31,7 @@ using magic.endpoint.contracts;
 using magic.lambda.io.contracts;
 using magic.lambda.auth.services;
 using magic.lambda.auth.contracts;
+using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
 using magic.endpoint.services.utilities;
 
@@ -71,7 +71,7 @@ namespace magic.library
         {
             var tasksFile = configuration["magic:scheduler:tasks-file"] ?? "~/tasks.hl";
             tasksFile = tasksFile.Replace("~", AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/").TrimEnd('/'));
-            services.AddHostedService((svc) => new BackgroundService(svc, tasksFile));
+            services.AddSingleton((svc) => new TaskScheduler(svc, tasksFile));
         }
 
         /// <summary>
