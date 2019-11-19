@@ -72,7 +72,8 @@ namespace magic.library
             var tasksFile = configuration["magic:scheduler:tasks-file"] ?? "~/tasks.hl";
             tasksFile = tasksFile.Replace("~", AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/").TrimEnd('/'));
             var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "true");
-            services.AddSingleton((svc) => new TaskScheduler(svc, tasksFile, autoStart));
+            var maxThreads = int.Parse(configuration["magic:scheduler:max-threads"] ?? "4");
+            services.AddSingleton((svc) => new TaskScheduler(svc, tasksFile, autoStart, maxThreads));
         }
 
         /// <summary>
