@@ -71,7 +71,8 @@ namespace magic.library
         {
             var tasksFile = configuration["magic:scheduler:tasks-file"] ?? "~/tasks.hl";
             tasksFile = tasksFile.Replace("~", AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/").TrimEnd('/'));
-            services.AddSingleton((svc) => new TaskScheduler(svc, tasksFile));
+            var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "true");
+            services.AddSingleton((svc) => new TaskScheduler(svc, tasksFile, autoStart));
         }
 
         /// <summary>
@@ -289,7 +290,8 @@ namespace magic.library
                 typeof(lambda.strings.Concat),
                 typeof(lambda.validators.ValidateDate),
                 typeof(io.controller.FilesController),
-                typeof(ExecutorAsync)
+                typeof(ExecutorAsync),
+                typeof(TaskScheduler)
             };
 
             /*
