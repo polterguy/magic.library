@@ -70,9 +70,10 @@ namespace magic.library
         public static void AddMagicScheduler(this IServiceCollection services, IConfiguration configuration)
         {
             var tasksFile = configuration["magic:scheduler:tasks-file"] ?? "~/tasks.hl";
-            tasksFile = tasksFile.Replace("~", AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/").TrimEnd('/'));
+            tasksFile = tasksFile.Replace("~", Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/'));
             var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "true");
             var maxThreads = int.Parse(configuration["magic:scheduler:max-threads"] ?? "4");
+            services.AddTransient<lambda.scheduler.utilities.ILogger, TaskLogger>();
             services.AddSingleton((svc) => new TaskScheduler(svc, tasksFile, autoStart, maxThreads));
         }
 
