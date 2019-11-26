@@ -71,10 +71,9 @@ namespace magic.library
         {
             var tasksFile = configuration["magic:scheduler:tasks-file"] ?? "~/tasks.hl";
             tasksFile = tasksFile.Replace("~", Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/'));
-            var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "true");
-            var maxThreads = int.Parse(configuration["magic:scheduler:max-threads"] ?? "4");
+            var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "false");
             services.AddTransient<lambda.scheduler.utilities.ILogger, TaskLogger>();
-            services.AddSingleton((svc) => new TaskScheduler(svc, tasksFile, autoStart, maxThreads));
+            services.AddSingleton((svc) => new TaskScheduler(svc, tasksFile, autoStart));
         }
 
         /// <summary>
