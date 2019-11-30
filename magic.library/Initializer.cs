@@ -67,13 +67,19 @@ namespace magic.library
             services.AddMagicScheduler(configuration);
         }
 
+        /// <summary>
+        /// Adds the Magic Scheduler to your application
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        /// <param name="configuration">The configuration for your app.</param>
         public static void AddMagicScheduler(this IServiceCollection services, IConfiguration configuration)
         {
             var tasksFile = configuration["magic:scheduler:tasks-file"] ?? "~/tasks.hl";
             tasksFile = tasksFile.Replace("~", Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/'));
             var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "false");
-            services.AddTransient<lambda.scheduler.utilities.ILogger, TaskLogger>();
-            services.AddSingleton((svc) => new TaskScheduler(svc, tasksFile, autoStart));
+            var maxThreads = int.Parse(configuration["magic:scheduler:max-threads"] ?? "4");
+            var logger = new TaskLogger();
+            services.AddSingleton((svc) => new Scheduler(svc, logger, tasksFile, autoStart, maxThreads));
         }
 
         /// <summary>
@@ -292,7 +298,7 @@ namespace magic.library
                 typeof(lambda.validators.ValidateDate),
                 typeof(io.controller.FilesController),
                 typeof(ExecutorAsync),
-                typeof(TaskScheduler)
+                typeof(Scheduler)
             };
 
             /*

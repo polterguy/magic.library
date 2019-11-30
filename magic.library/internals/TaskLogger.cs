@@ -22,5 +22,10 @@ namespace magic.library.internals
         {
             _logger.Error($"An error occurred during evaluation of task named '{taskName}'", err);
         }
+
+        public void LogInfo(string description)
+        {
+            _logger.Info(description);
+        }
     }
 }
