@@ -74,12 +74,14 @@ namespace magic.library
         /// <param name="configuration">The configuration for your app.</param>
         public static void AddMagicScheduler(this IServiceCollection services, IConfiguration configuration)
         {
-            var tasksFile = configuration["magic:scheduler:tasks-file"] ?? "~/tasks.hl";
-            tasksFile = tasksFile.Replace("~", Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/'));
+            var tasksPath = configuration["magic:scheduler:tasks-file"];
+            if (tasksPath == null)
+                tasksPath = configuration["magic:scheduler:tasks-folder"] ?? "~/tasks.hl";
+            tasksPath = tasksPath.Replace("~", Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/'));
             var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "false");
             var maxThreads = int.Parse(configuration["magic:scheduler:max-threads"] ?? "4");
             var logger = new TaskLogger();
-            services.AddSingleton((svc) => new Scheduler(svc, logger, tasksFile, autoStart, maxThreads));
+            services.AddSingleton(svc => new Scheduler(svc, logger, tasksPath, autoStart, maxThreads));
         }
 
         /// <summary>
@@ -174,7 +176,7 @@ namespace magic.library
             if (ensureFolder)
             {
                 // Making sure the folder for dynamic files exists on server.
-                var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files")
+                var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files/")
                     .Replace("~", Directory.GetCurrentDirectory())
                     .TrimEnd('/') + "/";
 
@@ -405,7 +407,7 @@ namespace magic.library
         {
             // Creating a signaler and figuring out root path for dynamic Hyperlambda files.
             var signaler = app.ApplicationServices.GetService<ISignaler>();
-            var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files")
+            var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files/")
                 .Replace("~", Directory.GetCurrentDirectory())
                 .TrimEnd('/') + "/";
 

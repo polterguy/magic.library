@@ -13,7 +13,7 @@ namespace magic.library.internals
     {
         public RootResolver(IConfiguration configuration)
         {
-            RootFolder = (configuration["magic:io:root-folder"] ?? "~/files")
+            RootFolder = (configuration["magic:io:root-folder"] ?? "~/files/")
                 .Replace("~", Directory.GetCurrentDirectory())
                 .TrimEnd('/') + "/";
         }
