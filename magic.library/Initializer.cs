@@ -273,46 +273,17 @@ namespace magic.library
         public static void AddMagicSignals(this IServiceCollection services, string licenseKey = null)
         {
             /*
-             * Unfortunately, we have to touch every assembly that we're only
-             * using slots from, and not directly referencing, since otherwise
-             * the .Net compiler will optimize these assemblies completely away
-             * for us, and no slots will be registered from these assemblies,
-             * or any other code executing from them either.
-             *
-             * Darn it Microsoft!
+             * Loading all assemblies that are not loaded up for some reasons.
              */
-            var types = new Type[]
-            {
-                typeof(lambda.Eval),
-                typeof(lambda.auth.CreateTicket),
-                typeof(lambda.config.ConfigGet),
-                typeof(lambda.crypto.Hash),
-                typeof(lambda.http.HttpGet),
-                typeof(lambda.hyperlambda.Lambda2Hyper),
-                typeof(lambda.io.files.CopyFile),
-                typeof(lambda.json.Json2Lambda),
-                typeof(lambda.logging.LogDebug),
-                typeof(lambda.math.Addition),
-                typeof(lambda.mssql.Connect),
-                typeof(lambda.mysql.Connect),
-                typeof(lambda.slots.Create),
-                typeof(lambda.strings.Concat),
-                typeof(lambda.validators.ValidateDate),
-                typeof(io.controller.FilesController),
-                typeof(ExecutorAsync),
-                typeof(Scheduler)
-            };
+            var loadedPaths = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Select(x => x.Location);
 
-            /*
-             * Making sure we log every assembly we touch, if log4net has
-             * been configured.
-             */
-            if (_logger != null)
+            var assemblyPaths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
+            foreach (var idx in assemblyPaths.Where(x => !loadedPaths.Contains(x, StringComparer.InvariantCultureIgnoreCase)))
             {
-                foreach (var idx in types)
-                {
-                    _logger.Info($"Touching '{idx.Assembly.FullName}'");
-                }
+                _logger?.Info($"Dynamically loading assembly '{Path.GetFileName(idx)}'");
+                AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(idx));
             }
 
             /*
