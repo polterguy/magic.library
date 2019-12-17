@@ -12,7 +12,7 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/polterguy/magic.library/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://polterguy.github.io/favicon.ico</PackageIconUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>3.1.6</PackageVersion>
+    <PackageVersion>3.1.7</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library.git</RepositoryUrl>
@@ -42,8 +42,8 @@
     <PackageReference Include="magic.lambda.mssql" Version="3.1.1" />
     <PackageReference Include="magic.signals" Version="3.1.0" />
     <PackageReference Include="magic.lambda.auth" Version="3.1.0" />
-    <PackageReference Include="magic.endpoint" Version="3.1.0" />
-    <PackageReference Include="magic.endpoint.services" Version="3.1.0" />
+    <PackageReference Include="magic.endpoint" Version="3.1.1" />
+    <PackageReference Include="magic.endpoint.services" Version="3.1.1" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
   </ItemGroup>
