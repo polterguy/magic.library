@@ -216,7 +216,6 @@ namespace magic.library
              */
             var secret = configuration["magic:auth:secret"] ??
                 throw new ApplicationException("Couldn't find any 'magic:auth:secret' configuration settings in your appSettings.json file. Without this configuration setting, magic can never be secure.");
-            var key = Encoding.ASCII.GetBytes(secret);
 
             /*
              * Wiring up .Net Core to use JWT Bearer tokens for auth.
@@ -228,6 +227,8 @@ namespace magic.library
             })
             .AddJwtBearer(x =>
             {
+                var secret = configuration["magic:auth:secret"];
+                var key = Encoding.ASCII.GetBytes(secret);
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
