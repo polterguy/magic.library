@@ -236,6 +236,11 @@ namespace magic.library
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+
+                    /*
+                     * Notice, making sure we retrieve secret for each time it's needed.
+                     * This will make it possible to change the secret without having to restart the web app.
+                     */
                     IssuerSigningKeyResolver = (token, secToken, kid, valParams) =>
                     {
                         var key = Encoding.ASCII.GetBytes(configuration["magic:auth:secret"]);
