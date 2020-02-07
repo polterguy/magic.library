@@ -42,7 +42,7 @@
     <PackageReference Include="magic.lambda.mssql" Version="4.0.4" />
     <PackageReference Include="magic.signals" Version="4.0.4" />
     <PackageReference Include="magic.lambda.auth" Version="4.0.4" />
-    <PackageReference Include="magic.endpoint" Version="4.0.5" />
+    <PackageReference Include="magic.endpoint" Version="4.0.7" />
     <PackageReference Include="magic.endpoint.services" Version="4.0.8" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
