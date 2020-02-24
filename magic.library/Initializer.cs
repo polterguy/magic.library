@@ -271,7 +271,7 @@ namespace magic.library
             Utilities.RootFolder = rootFolder;
 
             // Configuring the default executor to execute dynamic URLs.
-            services.AddTransient<IExecutorAsync>(svc => new ExecutorAsync(svc.GetRequiredService<ISignaler>()));
+            services.AddTransient<IExecutorAsync>(svc => new ExecutorAsync(svc.GetRequiredService<ISignaler>(), configuration));
         }
 
         /// <summary>
