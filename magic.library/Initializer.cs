@@ -441,11 +441,12 @@ namespace magic.library
          */
         static IEnumerable<Type> Slots(IServiceCollection services)
         {
-            var type = typeof(ISlot);
+            var type1 = typeof(ISlot);
+            var type2 = typeof(ISlotAsync);
             var result = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(x => !x.IsDynamic && !x.FullName.StartsWith("Microsoft", StringComparison.InvariantCulture))
                 .SelectMany(s => s.GetTypes())
-                .Where(p => type.IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract);
+                .Where(p => (type1.IsAssignableFrom(p) || type2.IsAssignableFrom(p)) && !p.IsInterface && !p.IsAbstract);
 
             foreach (var idx in result)
             {
