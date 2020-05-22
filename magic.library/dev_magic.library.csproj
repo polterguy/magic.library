@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\magic.lambda.json\magic.lambda.json\dev_magic.lambda.json.csproj" />
     <ProjectReference Include="..\..\magic.lambda.logging\magic.lambda.logging\dev_magic.lambda.logging.csproj" />
     <ProjectReference Include="..\..\magic.lambda.math\magic.lambda.math\dev_magic.lambda.math.csproj" />
+    <ProjectReference Include="..\..\magic.lambda.mime\magic.lambda.mime\dev_magic.lambda.mime.csproj" />
     <ProjectReference Include="..\..\magic.lambda.mssql\magic.lambda.mssql\dev_magic.lambda.mssql.csproj" />
     <ProjectReference Include="..\..\magic.lambda.mysql\magic.lambda.mysql\dev_magic.lambda.mysql.csproj" />
     <ProjectReference Include="..\..\magic.lambda.scheduler\magic.lambda.scheduler\dev_magic.lambda.scheduler.csproj" />
