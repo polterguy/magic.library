@@ -30,7 +30,9 @@ using magic.library.internals;
 using magic.endpoint.contracts;
 using magic.lambda.io.contracts;
 using magic.lambda.auth.services;
+using magic.lambda.mime.services;
 using magic.lambda.auth.contracts;
+using magic.lambda.mime.contracts;
 using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
 using magic.endpoint.services.utilities;
@@ -65,6 +67,7 @@ namespace magic.library
             services.AddMagicFileServices(configuration);
             services.AddMagicAuthorization(configuration);
             services.AddMagicScheduler(configuration);
+            services.AddMagicMail();
         }
 
         /// <summary>
@@ -272,6 +275,16 @@ namespace magic.library
 
             // Configuring the default executor to execute dynamic URLs.
             services.AddTransient<IExecutorAsync>(svc => new ExecutorAsync(svc.GetRequiredService<ISignaler>(), configuration));
+        }
+
+        /// <summary>
+        /// Adds Magic Mail to your application
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        /// <param name="configuration">The configuration for your app.</param>
+        public static void AddMagicMail(this IServiceCollection services)
+        {
+            services.AddTransient<ISmtpClient, SmtpClient>();
         }
 
         /// <summary>
