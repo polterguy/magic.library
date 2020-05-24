@@ -285,6 +285,7 @@ namespace magic.library
         public static void AddMagicMail(this IServiceCollection services)
         {
             services.AddTransient<ISmtpClient, SmtpClient>();
+            services.AddTransient<IPop3Client, Pop3Client>();
         }
 
         /// <summary>
