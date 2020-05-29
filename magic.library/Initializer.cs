@@ -158,7 +158,13 @@ namespace magic.library
             /*
              * Associating the IFileServices with its default implementation.
              */
-            services.AddTransient<IFileService, FileService>();
+            services.AddTransient<io.contracts.IFileService, FileService>();
+
+            /*
+             * Associating the IFileServices and IFolderService with its default implementation.
+             */
+            services.AddTransient<lambda.io.contracts.IFileService, magic.lambda.io.files.services.FileService>();
+            services.AddTransient<lambda.io.contracts.IFolderService, magic.lambda.io.files.services.FolderService>();
 
             /*
              * Making sure magic.io can only be used by "root" roles.
