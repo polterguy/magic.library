@@ -163,7 +163,7 @@ namespace magic.library
             /*
              * Associating the IFileServices and IFolderService with its default implementation.
              */
-            services.AddTransient<lambda.io.contracts.IFileService, magic.lambda.io.files.services.FileService>();
+            services.AddTransient<lambda.io.contracts.IFileService, magic.lambda.io.file.services.FileService>();
             services.AddTransient<lambda.io.contracts.IFolderService, magic.lambda.io.folder.services.FolderService>();
 
             /*
