@@ -14,7 +14,7 @@ namespace magic.library.internals
      *
      * Uses log4net internally.
      */
-    internal class Logger : lambda.logging.ILog
+    internal class Logger : lambda.logging.helpers.ILog
     {
         readonly static ILog _logger = LogManager.GetLogger(typeof(Logger));
 

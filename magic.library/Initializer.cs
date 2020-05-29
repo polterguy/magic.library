@@ -124,7 +124,7 @@ namespace magic.library
              * our internal "Logger" class, which is the class actually logging
              * entries, when for instance the [log.info] slot is invoked.
              */
-            services.AddTransient<lambda.logging.ILog, Logger>();
+            services.AddTransient<lambda.logging.helpers.ILog, Logger>();
         }
 
         /// <summary>
