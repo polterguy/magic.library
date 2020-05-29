@@ -32,6 +32,7 @@
     <PackageReference Include="magic.lambda.io" Version="5.0.0" />
     <PackageReference Include="magic.lambda.json" Version="5.0.0" />
     <PackageReference Include="magic.lambda.logging" Version="5.0.0" />
+    <PackageReference Include="magic.lambda.mail" Version="5.0.0" />
     <PackageReference Include="magic.lambda.math" Version="5.0.0" />
     <PackageReference Include="magic.lambda.mysql" Version="5.0.2" />
     <PackageReference Include="magic.lambda.scheduler" Version="5.0.0" />
