@@ -12,7 +12,7 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/polterguy/magic.library/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://polterguy.github.io/favicon.ico</PackageIconUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>5.0.8</PackageVersion>
+    <PackageVersion>5.0.9</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library.git</RepositoryUrl>
@@ -36,7 +36,7 @@
     <PackageReference Include="magic.lambda.math" Version="5.0.0" />
     <PackageReference Include="magic.lambda.mysql" Version="5.0.2" />
     <PackageReference Include="magic.lambda.scheduler" Version="5.0.0" />
-    <PackageReference Include="magic.lambda.slots" Version="5.0.0" />
+    <PackageReference Include="magic.lambda.slots" Version="5.0.1" />
     <PackageReference Include="magic.lambda.strings" Version="5.0.0" />
     <PackageReference Include="magic.lambda.validators" Version="5.0.0" />
     <PackageReference Include="magic.io" Version="5.0.0" />
@@ -44,7 +44,7 @@
     <PackageReference Include="magic.signals" Version="5.0.0" />
     <PackageReference Include="magic.lambda.auth" Version="5.0.0" />
     <PackageReference Include="magic.endpoint" Version="5.0.0" />
-    <PackageReference Include="magic.endpoint.services" Version="5.0.3" />
+    <PackageReference Include="magic.endpoint.services" Version="5.0.4" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
   </ItemGroup>

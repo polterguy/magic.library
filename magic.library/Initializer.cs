@@ -287,7 +287,6 @@ namespace magic.library
         /// Adds Magic Mail to your application
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        /// <param name="configuration">The configuration for your app.</param>
         public static void AddMagicMail(this IServiceCollection services)
         {
             services.AddTransient<ISmtpClient, SmtpClient>();
