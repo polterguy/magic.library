@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="magic.lambda" Version="5.0.0" />
+    <PackageReference Include="magic.lambda" Version="5.0.1" />
     <PackageReference Include="magic.lambda.config" Version="5.0.0" />
     <PackageReference Include="magic.lambda.crypto" Version="5.0.0" />
     <PackageReference Include="magic.lambda.http" Version="5.0.0" />
