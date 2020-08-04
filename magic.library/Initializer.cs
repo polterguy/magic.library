@@ -82,9 +82,8 @@ namespace magic.library
                 tasksPath = configuration["magic:scheduler:tasks-folder"] ?? "~/tasks.hl";
             tasksPath = tasksPath.Replace("~", Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/'));
             var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "false");
-            var maxThreads = int.Parse(configuration["magic:scheduler:max-threads"] ?? "4");
             var logger = new TaskLogger();
-            services.AddSingleton(svc => new Scheduler(svc, logger, tasksPath, autoStart, maxThreads));
+            services.AddSingleton(typeof(IScheduler), svc => new Scheduler(svc, logger, configuration, autoStart));
         }
 
         /// <summary>
@@ -341,6 +340,12 @@ namespace magic.library
         {
             app.UseMagicExceptions();
             app.UseMagicStartupFiles(configuration);
+            var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "false");
+            if (autoStart)
+            {
+                // Making sure we start Scheduler.
+                app.ApplicationServices.GetService(typeof(IScheduler));
+            }
         }
 
         /// <summary>
