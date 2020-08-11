@@ -12,7 +12,7 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/polterguy/magic.library/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://polterguy.github.io/favicon.ico</PackageIconUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>8.0.2</PackageVersion>
+    <PackageVersion>8.0.3</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library.git</RepositoryUrl>
@@ -42,7 +42,7 @@
     <PackageReference Include="magic.lambda.mail" Version="8.0.1" />
     <PackageReference Include="magic.lambda.math" Version="8.0.1" />
     <PackageReference Include="magic.lambda.mysql" Version="8.0.1" />
-    <PackageReference Include="magic.lambda.scheduler" Version="8.0.1" />
+    <PackageReference Include="magic.lambda.scheduler" Version="8.0.2" />
     <PackageReference Include="magic.lambda.slots" Version="8.0.1" />
     <PackageReference Include="magic.lambda.strings" Version="8.0.1" />
     <PackageReference Include="magic.lambda.dates" Version="8.0.1" />
