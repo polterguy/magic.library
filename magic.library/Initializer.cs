@@ -5,7 +5,6 @@
 
 using System;
 using System.IO;
-using System.Xml;
 using System.Text;
 using System.Linq;
 using System.Reflection;
@@ -17,7 +16,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using log4net;
 using Newtonsoft.Json.Linq;
 using magic.io.services;
 using magic.io.contracts;
@@ -33,6 +31,7 @@ using magic.lambda.auth.services;
 using magic.lambda.mime.services;
 using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
+using magic.lambda.logging.helpers;
 using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
 using magic.endpoint.services.utilities;
@@ -45,8 +44,6 @@ namespace magic.library
     /// </summary>
     public static class Initializer
     {
-        static ILog _logger;
-
         /// <summary>
         /// Convenience method that wires up all Magic components with their
         /// default settings.
@@ -61,7 +58,7 @@ namespace magic.library
             string licenseKey = null)
         {
             services.AddMagicHttp();
-            services.AddMagicLog4netServices();
+            services.AddMagicLogging();
             services.AddMagicSignals(licenseKey);
             services.AddMagicEndpoints(configuration);
             services.AddMagicFileServices(configuration);
@@ -82,48 +79,22 @@ namespace magic.library
                 tasksPath = configuration["magic:scheduler:tasks-folder"] ?? "~/tasks.hl";
             tasksPath = tasksPath.Replace("~", Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/'));
             var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "false");
-            var logger = new TaskLogger();
-            services.AddSingleton(typeof(IScheduler), svc => new Scheduler(svc, logger, configuration, autoStart));
+            services.AddSingleton(typeof(IScheduler),
+                svc => new Scheduler(svc, new Logger(svc, configuration), configuration, autoStart));
         }
 
         /// <summary>
-        /// Making sure Magic is using log4net as its logger implementation.
-        /// Notice, this method depends upon a "log4net.config" configuration
-        /// file existing on root on your disc.
+        /// Tying up audit logging for Magic.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicLog4netServices(this IServiceCollection services)
+        public static void AddMagicLogging(this IServiceCollection services)
         {
             /*
-             * Assuming "log4net.config" exists on root folder of application.
-             */
-            var configurationFile = string.Concat(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "log4net.config");
-
-            /*
-             * Loading "log4net.config" as an XML file, and using it to
-             * configure log4net.
-             */
-            var log4netConfig = new XmlDocument();
-            log4netConfig.Load(File.OpenRead(configurationFile));
-            var repo = LogManager.CreateRepository(
-                Assembly.GetEntryAssembly(),
-                typeof(log4net.Repository.Hierarchy.Hierarchy));
-            log4net.Config.XmlConfigurator.Configure(repo, log4netConfig["log4net"]);
-
-            /*
-             * Logging the fact that log4net was successfully wired up.
-             */
-            _logger = LogManager.GetLogger(typeof(Initializer));
-            _logger.Info("Initializing log4net for Magic");
-
-            /*
-             * Associating magic.lambda.logging's ILog service contract with
+             * Associating magic.lambda.logging's ILogger service contract with
              * our internal "Logger" class, which is the class actually logging
              * entries, when for instance the [log.info] slot is invoked.
              */
-            services.AddTransient<lambda.logging.helpers.ILog, Logger>();
+            services.AddTransient<magic.lambda.logging.helpers.ILogger, Logger>();
         }
 
         /// <summary>
@@ -149,11 +120,6 @@ namespace magic.library
             IConfiguration configuration,
             bool ensureFolder = false)
         {
-            /*
-             * Logging.
-             */
-            _logger?.Info("Using default magic.io services, and only allowing 'root' to use magic.io");
-
             /*
              * Associating the IFileServices with its default implementation.
              */
@@ -202,8 +168,6 @@ namespace magic.library
         /// <param name="configuration">The configuration for your app.</param>
         public static void AddMagicAuthorization(this IServiceCollection services, IConfiguration configuration)
         {
-            _logger?.Info("Configures magic.lambda.auth to use its default ticket provider");
-
             /*
              * Configures magic.lambda.auth to use its default implementation of
              * HttpTicketFactory as its authentication and authorization
@@ -265,8 +229,6 @@ namespace magic.library
         /// <param name="configuration">Your apps configuration.</param>
         public static void AddMagicEndpoints(this IServiceCollection services, IConfiguration configuration)
         {
-            _logger?.Info("Configures magic.endpoint to use its default executor");
-
             /*
              * Figuring out which folder to resolve dynamic Hyperlambda files from,
              * and making sure we configure the Hyperlambda resolver to use the correct
@@ -310,7 +272,6 @@ namespace magic.library
             var assemblyPaths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
             foreach (var idx in assemblyPaths.Where(x => !loadedPaths.Contains(x, StringComparer.InvariantCultureIgnoreCase)))
             {
-                _logger?.Info($"Dynamically loading assembly '{Path.GetFileName(idx)}'");
                 AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(idx));
             }
 
@@ -318,7 +279,6 @@ namespace magic.library
              * Using the default ISignalsProvider and the default ISignals
              * implementation.
              */
-            _logger?.Info("Configuring magic.signals to use its default service implementations");
             services.AddTransient<ISignaler, Signaler>();
             services.AddSingleton<ISignalsProvider>(new SignalsProvider(Slots(services)));
 
@@ -349,9 +309,8 @@ namespace magic.library
         }
 
         /// <summary>
-        /// Traps all unhandled exceptions, logs them to your log files using
-        /// log4net (if configured), and returns the exception message back
-        /// to the client as a JSON response.
+        /// Traps all unhandled exceptions, and returns them to client,
+        /// if build is DEBUG build, and/or exception allows for this.
         /// </summary>
         /// <param name="app">The application builder of your app.</param>
         public static void UseMagicExceptions(this IApplicationBuilder app)
@@ -368,11 +327,6 @@ namespace magic.library
                 if (ex != null)
                 {
                     var msg = ex.Error.Message ?? ex.GetType().FullName;
-                    if (_logger != null)
-                    {
-                        _logger.Error("At path: " + ex.Path);
-                        _logger.Error(msg, ex.Error);
-                    }
 #if DEBUG
                     var response = new JObject
                     {

@@ -53,7 +53,6 @@
     <PackageReference Include="magic.lambda.auth" Version="8.0.1" />
     <PackageReference Include="magic.endpoint" Version="8.0.1" />
     <PackageReference Include="magic.endpoint.services" Version="8.0.1" />
-    <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
   </ItemGroup>
 </Project>
