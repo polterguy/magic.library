@@ -22,6 +22,7 @@ using magic.io.contracts;
 using magic.http.services;
 using magic.http.contracts;
 using magic.signals.services;
+using magic.lambda.exceptions;
 using magic.signals.contracts;
 using magic.endpoint.services;
 using magic.library.internals;
@@ -327,17 +328,29 @@ namespace magic.library
                 if (ex != null)
                 {
                     var msg = ex.Error.Message ?? ex.GetType().FullName;
+                    JObject response;
 #if DEBUG
-                    var response = new JObject
+                    response = new JObject
                     {
                         ["message"] = msg,
                         ["stack-trace"] = ex.Error.StackTrace,
                     };
 #else
-                    var response = new JObject
+                    if ((ex.Error is HyperlambdaException hypEx) && hypEx.IsPublic)
                     {
-                        ["message"] = "Guru meditation, come back when Universe is in order!"
-                    };
+                        response = new JObject
+                        {
+                            ["message"] = msg,
+                            ["stack-trace"] = ex.Error.StackTrace,
+                        };
+                    }
+                    else
+                    {
+                        response = new JObject
+                        {
+                            ["message"] = "Guru meditation, come back when Universe is in order!"
+                        };
+                    }
 #endif
                     await context.Response.WriteAsync(
                         response.ToString(Newtonsoft.Json.Formatting.Indented));
