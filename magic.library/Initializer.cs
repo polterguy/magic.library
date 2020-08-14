@@ -328,6 +328,8 @@ namespace magic.library
                 if (ex != null)
                 {
                     var msg = ex.Error.Message ?? ex.GetType().FullName;
+                    var logger = app.ApplicationServices.GetService(typeof(ILogger)) as ILogger;
+                    await logger.ErrorAsync("Unhandled exception occurred", ex.Error);
                     JObject response;
 #if DEBUG
                     response = new JObject
