@@ -75,10 +75,6 @@ namespace magic.library
         /// <param name="configuration">The configuration for your app.</param>
         public static void AddMagicScheduler(this IServiceCollection services, IConfiguration configuration)
         {
-            var tasksPath = configuration["magic:scheduler:tasks-file"];
-            if (tasksPath == null)
-                tasksPath = configuration["magic:scheduler:tasks-folder"] ?? "~/tasks.hl";
-            tasksPath = tasksPath.Replace("~", Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/'));
             var autoStart = bool.Parse(configuration["magic:tasks:scheduler:auto-start"] ?? "false");
             services.AddSingleton(
                 typeof(IScheduler),
