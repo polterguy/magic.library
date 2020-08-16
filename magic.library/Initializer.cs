@@ -79,8 +79,9 @@ namespace magic.library
             if (tasksPath == null)
                 tasksPath = configuration["magic:scheduler:tasks-folder"] ?? "~/tasks.hl";
             tasksPath = tasksPath.Replace("~", Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/'));
-            var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "false");
-            services.AddSingleton(typeof(IScheduler),
+            var autoStart = bool.Parse(configuration["magic:tasks:scheduler:auto-start"] ?? "false");
+            services.AddSingleton(
+                typeof(IScheduler),
                 svc => new Scheduler(svc, new Logger(svc, configuration), configuration, autoStart));
         }
 
@@ -301,7 +302,7 @@ namespace magic.library
         {
             app.UseMagicExceptions();
             app.UseMagicStartupFiles(configuration);
-            var autoStart = bool.Parse(configuration["magic:scheduler:auto-start"] ?? "false");
+            var autoStart = bool.Parse(configuration["magic:tasks:scheduler:auto-start"] ?? "false");
             if (autoStart)
             {
                 // Making sure we start Scheduler.
