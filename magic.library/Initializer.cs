@@ -25,6 +25,7 @@ using magic.lambda.threading;
 using magic.signals.services;
 using magic.signals.contracts;
 using magic.endpoint.services;
+using magic.lambda.exceptions;
 using magic.library.internals;
 using magic.endpoint.contracts;
 using magic.lambda.io.contracts;
@@ -336,7 +337,7 @@ namespace magic.library
                 {
                     var msg = ex.Error.Message ?? ex.GetType().FullName;
                     var logger = app.ApplicationServices.GetService(typeof(ILogger)) as ILogger;
-                    await logger.ErrorAsync("Unhandled exception occurred", ex.Error);
+                    await logger.ErrorAsync($"Unhandled exception occurred '{msg}'", ex.Error);
                     JObject response;
 #if DEBUG
                     response = new JObject
@@ -351,6 +352,15 @@ namespace magic.library
                         {
                             ["message"] = msg,
                             ["stack-trace"] = ex.Error.StackTrace,
+                        };
+                        context.Response.StatusCode = hypEx.Status;
+                    }
+                    else if (ex.Error is HyperlambdaException hypEx2)
+                    {
+                        context.Response.StatusCode = hypEx2.Status;
+                        response = new JObject
+                        {
+                            ["message"] = "Guru meditation, come back when Universe is in order!"
                         };
                     }
                     else
