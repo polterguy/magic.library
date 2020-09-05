@@ -89,7 +89,7 @@ namespace magic.library
             var autoStart = bool.Parse(configuration["magic:tasks:scheduler:auto-start"] ?? "false");
             services.AddSingleton(
                 typeof(IScheduler),
-                svc => new Scheduler(svc, new Logger(svc, configuration), configuration, autoStart));
+                svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>(), configuration), configuration, autoStart));
         }
 
         /// <summary>
