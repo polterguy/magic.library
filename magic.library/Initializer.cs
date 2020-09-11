@@ -23,6 +23,7 @@ using magic.http.services;
 using magic.http.contracts;
 using magic.lambda.threading;
 using magic.signals.services;
+using magic.lambda.exceptions;
 using magic.signals.contracts;
 using magic.endpoint.services;
 using magic.library.internals;

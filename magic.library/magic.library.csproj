@@ -7,10 +7,10 @@
     <Authors>Thomas Hansen</Authors>
     <Company>Thomas Hansen</Company>
     <Copyright>Thomas Hansen, thomas@gaiasoul.com</Copyright>
-    <Description>Helper project for Magic to wire up everything easily by simply adding one package, and invoking two simple methods. When using Magic, this is (probably) the only package you should actually add, since this package pulls in everything else you'll need automatically.</Description>
+    <Description>Helper project for Magic to wire up everything easily by simply adding one package, and invoking two simple methods. When using Magic, this is (probably) the only package you should actually add, since this package pulls in everything else you'll need automatically, and wires up everything sanely by default.</Description>
     <PackageProjectUrl>https://github.com/polterguy/magic.library</PackageProjectUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>8.1.10</PackageVersion>
+    <PackageVersion>8.1.13</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library.git</RepositoryUrl>
