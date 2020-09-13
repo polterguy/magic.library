@@ -247,11 +247,13 @@ namespace magic.library
             var rootFolder = configuration["magic:endpoint:root-folder"] ?? "~/files/";
             rootFolder = rootFolder
                 .Replace("~", Directory.GetCurrentDirectory())
-                .Replace("\\", "/");
+                .Replace("\\", "/")
+                .TrimEnd('/') + 
+                "/";
             Utilities.RootFolder = rootFolder;
 
             // Configuring the default executor to execute dynamic URLs.
-            services.AddTransient<IExecutorAsync>(svc => new ExecutorAsync(svc.GetRequiredService<ISignaler>(), configuration));
+            services.AddTransient<IExecutorAsync, ExecutorAsync>();
         }
 
         /// <summary>
