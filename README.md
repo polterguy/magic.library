@@ -1,7 +1,7 @@
 
 # Magic Library, a simplified NuGet wrapper for Magic's packages
 
-[![Build status](https://travis-ci.org/polterguy/magic.library.svg?master)](https://travis-ci.org/polterguy/magic.library)
+[![Build status](https://travis-ci.com/polterguy/magic.library.svg?master)](https://travis-ci.com/polterguy/magic.library)
 
 Helper project for [Magic](https://github.com/polterguy/magic), to wire up everything and initialize Magic.
 
