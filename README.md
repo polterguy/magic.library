@@ -86,3 +86,17 @@ requirements from your method.
 
 Doing this is very powerful, and allows you to change the way the system behaves by default - But is also definitely
 considered an _"advanced exercise"_.
+
+## Quality gates
+
+- [![Build status](https://travis-ci.com/polterguy/magic.library.svg?master)](https://travis-ci.com/polterguy/magic.library)
+- [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=alert_status)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
+- [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=bugs)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
+- [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=code_smells)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
+- [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
+- [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=ncloc)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
+- [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
+- [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
+- [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=security_rating)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
+- [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=sqale_index)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
+- [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=polterguy_magic.library&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=polterguy_magic.library)
