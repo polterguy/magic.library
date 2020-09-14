@@ -1,5 +1,5 @@
 
-# Magic Library, a simplified NuGet wrapper for Magic's packages
+# Magic Library
 
 [![Build status](https://travis-ci.com/polterguy/magic.library.svg?master)](https://travis-ci.com/polterguy/magic.library)
 
