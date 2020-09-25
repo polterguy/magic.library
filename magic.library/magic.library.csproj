@@ -10,7 +10,7 @@
     <Description>Helper project for Magic to wire up everything easily by simply adding one package, and invoking two simple methods. When using Magic, this is (probably) the only package you should actually add, since this package pulls in everything else you'll need automatically, and wires up everything sanely by default.</Description>
     <PackageProjectUrl>https://github.com/polterguy/magic.library</PackageProjectUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>8.1.25</PackageVersion>
+    <PackageVersion>8.2.0</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library.git</RepositoryUrl>
@@ -39,29 +39,29 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="magic.lambda" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.config" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.crypto" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.http" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.hyperlambda" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.io" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.json" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.logging" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.caching" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.mail" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.math" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.mysql" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.scheduler" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.slots" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.strings" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.dates" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.validators" Version="8.1.*" />
-    <PackageReference Include="magic.io" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.mssql" Version="8.1.*" />
-    <PackageReference Include="magic.signals" Version="8.1.*" />
-    <PackageReference Include="magic.lambda.auth" Version="8.1.*" />
-    <PackageReference Include="magic.endpoint" Version="8.1.*" />
-    <PackageReference Include="magic.endpoint.services" Version="8.1.*" />
+    <PackageReference Include="magic.lambda" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.config" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.crypto" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.http" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.hyperlambda" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.io" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.json" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.logging" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.caching" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.mail" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.math" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.mysql" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.scheduler" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.slots" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.strings" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.dates" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.validators" Version="8.2.*" />
+    <PackageReference Include="magic.io" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.mssql" Version="8.2.*" />
+    <PackageReference Include="magic.signals" Version="8.2.*" />
+    <PackageReference Include="magic.lambda.auth" Version="8.2.*" />
+    <PackageReference Include="magic.endpoint" Version="8.2.*" />
+    <PackageReference Include="magic.endpoint.services" Version="8.2.*" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
   </ItemGroup>
 </Project>
