@@ -64,7 +64,7 @@ namespace magic.library
             services.AddMagicLogging();
             services.AddMagicSignals(licenseKey);
             services.AddMagicEndpoints(configuration);
-            services.AddMagicFileServices(configuration);
+            services.AddMagicFileServices();
             services.AddMagicAuthorization(configuration);
             services.AddMagicScheduler(configuration);
             services.AddMagicMail();
@@ -87,10 +87,9 @@ namespace magic.library
         /// <param name="configuration">The configuration for your app.</param>
         public static void AddMagicScheduler(this IServiceCollection services, IConfiguration configuration)
         {
-            var autoStart = bool.Parse(configuration["magic:tasks:scheduler:auto-start"] ?? "false");
             services.AddSingleton(
                 typeof(IScheduler),
-                svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>(), configuration), configuration, autoStart));
+                svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>(), configuration), configuration));
         }
 
         /// <summary>
@@ -104,7 +103,7 @@ namespace magic.library
              * our internal "Logger" class, which is the class actually logging
              * entries, when for instance the [log.info] slot is invoked.
              */
-            services.AddTransient<magic.lambda.logging.helpers.ILogger, Logger>();
+            services.AddTransient<ILogger, Logger>();
         }
 
         /// <summary>
@@ -126,9 +125,7 @@ namespace magic.library
         /// <param name="ensureFolder">If true, will automatically create
         /// the Magic folder where Magic stores dynamically created files.</param>
         public static void AddMagicFileServices(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            bool ensureFolder = false)
+            this IServiceCollection services)
         {
             /*
              * Associating the IFileServices with its default implementation.
@@ -138,8 +135,8 @@ namespace magic.library
             /*
              * Associating the IFileServices and IFolderService with its default implementation.
              */
-            services.AddTransient<lambda.io.contracts.IFileService, magic.lambda.io.file.services.FileService>();
-            services.AddTransient<lambda.io.contracts.IFolderService, magic.lambda.io.folder.services.FolderService>();
+            services.AddTransient<lambda.io.contracts.IFileService, lambda.io.file.services.FileService>();
+            services.AddTransient<IFolderService, lambda.io.folder.services.FolderService>();
 
             /*
              * Making sure magic.io can only be used by "root" roles.
@@ -152,22 +149,6 @@ namespace magic.library
              * setting "magic:io:root-folder", or if not given "/files".
              */
             services.AddTransient<IRootResolver, RootResolver>();
-
-            /*
-             * Checking if caller wants us to automatically create folder for
-             * dynamic files if it doesn't already exist.
-             */
-            if (ensureFolder)
-            {
-                // Making sure the folder for dynamic files exists on server.
-                var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files/")
-                    .Replace("~", Directory.GetCurrentDirectory())
-                    .TrimEnd('/') + "/";
-
-                // Ensuring root folder for dynamic files exists on server.
-                if (!Directory.Exists(rootFolder))
-                    Directory.CreateDirectory(rootFolder);
-            }
         }
 
         /// <summary>
@@ -312,11 +293,24 @@ namespace magic.library
         {
             app.UseMagicExceptions();
             app.UseMagicStartupFiles(configuration);
+            app.UseScheduler(configuration);
+        }
+
+        /// <summary>
+        /// Convenience method to make sure we start scheduler if we're supposed to.
+        /// </summary>
+        /// <param name="app">The application builder of your app.</param>
+        /// <param name="configuration">The configuration for your app.</param>
+        public static void UseScheduler(
+            this IApplicationBuilder app,
+            IConfiguration configuration)
+        {
             var autoStart = bool.Parse(configuration["magic:tasks:scheduler:auto-start"] ?? "false");
             if (autoStart)
             {
                 // Making sure we start Scheduler.
-                app.ApplicationServices.GetService(typeof(IScheduler));
+                var scheduler = app.ApplicationServices.GetService(typeof(IScheduler)) as IScheduler;
+                scheduler.StartScheduler();
             }
         }
 
@@ -433,11 +427,9 @@ namespace magic.library
             // Startup folder, now executing all Hyperlambda files inside of it.
             foreach (var idxFile in Directory.GetFiles(folder, "*.hl"))
             {
-                using (var stream = File.OpenRead(idxFile))
-                {
-                    var lambda = new Parser(stream).Lambda();
-                    signaler.Signal("eval", lambda);
-                }
+                using var stream = File.OpenRead(idxFile);
+                var lambda = new Parser(stream).Lambda();
+                signaler.Signal("eval", lambda);
             }
 
             // Recursively checking sub folders.
