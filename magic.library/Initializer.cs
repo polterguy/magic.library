@@ -113,6 +113,7 @@ namespace magic.library
         public static void AddMagicHttp(this IServiceCollection services)
         {
             services.AddTransient<IHttpClient, HttpClient>();
+            services.AddHttpClient();
         }
 
         /// <summary>
