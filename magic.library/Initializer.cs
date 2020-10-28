@@ -122,7 +122,6 @@ namespace magic.library
         /// role to read and write files from your server using magic.io.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        /// the Magic folder where Magic stores dynamically created files.</param>
         public static void AddMagicFileServices(this IServiceCollection services)
         {
             /*
