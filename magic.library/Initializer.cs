@@ -355,11 +355,12 @@ namespace magic.library
                     }
                     else if (hypEx != null)
                     {
-                        context.Response.StatusCode = hypEx2.Status;
+                        context.Response.StatusCode = hypEx.Status;
                         response = new JObject
                         {
                             ["message"] = "Guru meditation, come back when Universe is in order!"
                         };
+                        context.Response.StatusCode = hypEx.Status;
                     }
                     else
                     {
