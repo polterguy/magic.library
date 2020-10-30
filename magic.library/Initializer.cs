@@ -334,13 +334,17 @@ namespace magic.library
                     await logger.ErrorAsync($"Unhandled exception occurred '{msg}'", ex.Error);
                     JObject response;
 #if DEBUG
+                    var hypEx = ex.Error as HyperlambdaException;
+                    if (hypEx != null)
+                        context.Response.StatusCode = hypEx.Status;
                     response = new JObject
                     {
                         ["message"] = msg,
                         ["stack-trace"] = ex.Error.StackTrace,
                     };
 #else
-                    if ((ex.Error is HyperlambdaException hypEx) && hypEx.IsPublic)
+                    var hypEx = ex.Error as HyperlambdaException;
+                    if (hypEx != null && hypEx.IsPublic)
                     {
                         response = new JObject
                         {
@@ -349,7 +353,7 @@ namespace magic.library
                         };
                         context.Response.StatusCode = hypEx.Status;
                     }
-                    else if (ex.Error is HyperlambdaException hypEx2)
+                    else if (hypEx != null)
                     {
                         context.Response.StatusCode = hypEx2.Status;
                         response = new JObject
