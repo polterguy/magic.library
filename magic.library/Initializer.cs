@@ -275,7 +275,7 @@ namespace magic.library
             /*
              * Checking if caller supplied a license key.
              */
-            if (!string.IsNullOrEmpty(licenseKey) && licenseKey != "SUPPLY-YOUR-LICENSE-KEY-HERE") // Default value in config file ...
+            if (!string.IsNullOrEmpty(licenseKey) && licenseKey != "SUPPLY-YOUR-LICENSE-HERE") // Default value in config file ...
                 Signaler.SetLicenseKey(licenseKey);
         }
 
