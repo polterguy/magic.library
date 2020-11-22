@@ -89,7 +89,7 @@ namespace magic.library
         {
             services.AddSingleton(
                 typeof(IScheduler),
-                svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>(), configuration), configuration));
+                svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>()), configuration));
         }
 
         /// <summary>
