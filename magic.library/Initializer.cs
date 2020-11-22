@@ -413,7 +413,22 @@ namespace magic.library
                      */
                     var folder = new DirectoryInfo(idxModuleFolder);
                     if (folder.Name == "magic.startup")
+                    {
                         ExecuteStartupFiles(signaler, idxModuleFolder);
+                    }
+                    else
+                    {
+                        /*
+                         * Checking if there's a magic.startup folder inside of
+                         * the currently iterated sub-module folder.
+                         */
+                        foreach (var idxSubModuleFolder in Directory.GetDirectories(idxModuleFolder))
+                        {
+                            var subModuleFolder = new DirectoryInfo(idxSubModuleFolder);
+                            if (subModuleFolder.Name == "magic.startup")
+                                ExecuteStartupFiles(signaler, idxSubModuleFolder);
+                        }
+                    }
                 }
             }
         }
