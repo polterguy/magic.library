@@ -302,13 +302,9 @@ namespace magic.library
             this IApplicationBuilder app,
             IConfiguration configuration)
         {
-            var autoStart = bool.Parse(configuration["magic:tasks:scheduler:auto-start"] ?? "false");
-            if (autoStart)
-            {
-                // Making sure we start Scheduler.
-                var scheduler = app.ApplicationServices.GetService(typeof(IScheduler)) as IScheduler;
-                scheduler.StartScheduler();
-            }
+            // Making sure we start Scheduler.
+            var scheduler = app.ApplicationServices.GetService(typeof(IScheduler)) as IScheduler;
+            scheduler.StartScheduler();
         }
 
         /// <summary>
