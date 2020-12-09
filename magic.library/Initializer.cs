@@ -302,9 +302,12 @@ namespace magic.library
             this IApplicationBuilder app,
             IConfiguration configuration)
         {
-            // Making sure we start Scheduler.
-            var scheduler = app.ApplicationServices.GetService(typeof(IScheduler)) as IScheduler;
-            scheduler.StartScheduler();
+            // Starting scheduler, but only if system has been setup.
+            if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
+            {
+                var scheduler = app.ApplicationServices.GetService(typeof(IScheduler)) as IScheduler;
+                scheduler.StartScheduler();
+            }
         }
 
         /// <summary>
@@ -327,7 +330,7 @@ namespace magic.library
                 {
                     var msg = ex.Error.Message ?? ex.GetType().FullName;
                     var logger = app.ApplicationServices.GetService(typeof(ILogger)) as ILogger;
-                    await logger.ErrorAsync($"Unhandled exception occurred '{msg}'", ex.Error);
+                    await logger.ErrorAsync($"Unhandled exception occurred '{msg}' at '{ex.Path}'", ex.Error);
                     JObject response;
 #if DEBUG
                     var hypEx = ex.Error as HyperlambdaException;
