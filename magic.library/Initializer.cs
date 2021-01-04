@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Newtonsoft.Json.Linq;
@@ -21,6 +22,7 @@ using magic.io.services;
 using magic.io.contracts;
 using magic.http.services;
 using magic.http.contracts;
+using magic.lambda.caching;
 using magic.lambda.threading;
 using magic.signals.services;
 using magic.lambda.exceptions;
@@ -60,6 +62,7 @@ namespace magic.library
             IConfiguration configuration,
             string licenseKey = null)
         {
+            services.AddCaching();
             services.AddMagicHttp();
             services.AddMagicLogging();
             services.AddMagicSignals(licenseKey);
@@ -69,6 +72,15 @@ namespace magic.library
             services.AddMagicScheduler(configuration);
             services.AddMagicMail();
             services.AddLambda();
+        }
+
+        /// <summary>
+        /// Adds the Magic caching parts to your service collection.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddCaching(this IServiceCollection services)
+        {
+            services.AddSingleton<IMagicMemoryCache, MagicMemoryCache>();
         }
 
         /// <summary>
@@ -432,7 +444,7 @@ namespace magic.library
             }
         }
 
-#region [ -- Private helper methods -- ]
+        #region [ -- Private helper methods -- ]
 
         /*
          * Will recursively execute every single Hyperlambda file inside of
@@ -476,6 +488,6 @@ namespace magic.library
             return result;
         }
 
-#endregion
+        #endregion
     }
 }
