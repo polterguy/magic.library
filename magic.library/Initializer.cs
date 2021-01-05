@@ -35,6 +35,7 @@ using magic.lambda.auth.services;
 using magic.lambda.mime.services;
 using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
+using magic.lambda.caching.helpers;
 using magic.lambda.logging.helpers;
 using magic.io.services.authorization;
 using magic.lambda.scheduler.utilities;
