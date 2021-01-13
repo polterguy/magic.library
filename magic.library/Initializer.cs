@@ -354,8 +354,9 @@ namespace magic.library
                             response = new JObject
                             {
                                 ["message"] = msg,
-                                ["field"] = hypEx.FieldName,
                             };
+                            if (!string.IsNullOrEmpty(hypEx.FieldName))
+                                response["field"] = hypEx.FieldName;
                         }
                         else
                         {
