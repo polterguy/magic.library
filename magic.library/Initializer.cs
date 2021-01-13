@@ -343,34 +343,27 @@ namespace magic.library
                     var logger = app.ApplicationServices.GetService(typeof(ILogger)) as ILogger;
                     await logger.ErrorAsync($"Unhandled exception occurred '{msg}' at '{ex.Path}'", ex.Error);
                     JObject response;
-#if DEBUG
+
+                    // Checking if exception is a HyperlambdaException, which is handled in a custom way.
                     var hypEx = ex.Error as HyperlambdaException;
                     if (hypEx != null)
+                    {
                         context.Response.StatusCode = hypEx.Status;
-                    response = new JObject
-                    {
-                        ["message"] = msg,
-                        ["stack-trace"] = ex.Error.StackTrace,
-                    };
-#else
-                    var hypEx = ex.Error as HyperlambdaException;
-                    if (hypEx != null && hypEx.IsPublic)
-                    {
-                        response = new JObject
+                        if (hypEx.IsPublic)
                         {
-                            ["message"] = msg,
-                            ["stack-trace"] = ex.Error.StackTrace,
-                        };
-                        context.Response.StatusCode = hypEx.Status;
-                    }
-                    else if (hypEx != null)
-                    {
-                        context.Response.StatusCode = hypEx.Status;
-                        response = new JObject
+                            response = new JObject
+                            {
+                                ["message"] = msg,
+                                ["field"] = hypEx.FieldName,
+                            };
+                        }
+                        else
                         {
-                            ["message"] = "Guru meditation, come back when Universe is in order!"
-                        };
-                        context.Response.StatusCode = hypEx.Status;
+                            response = new JObject
+                            {
+                                ["message"] = "Guru meditation, come back when Universe is in order!"
+                            };
+                        }
                     }
                     else
                     {
@@ -379,18 +372,15 @@ namespace magic.library
                             ["message"] = "Guru meditation, come back when Universe is in order!"
                         };
                     }
-#endif
-                    await context.Response.WriteAsync(
-                        response.ToString(Newtonsoft.Json.Formatting.Indented));
+                    await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
                 }
                 else
                 {
                     var response = new JObject
                     {
-                        ["message"] = "Unknown error",
+                        ["message"] = "Guru meditation, come back when Universe is in order!",
                     };
-                    await context.Response.WriteAsync(
-                        response.ToString(Newtonsoft.Json.Formatting.Indented));
+                    await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
                 }
             }));
         }
