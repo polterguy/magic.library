@@ -14,6 +14,7 @@
     <ProjectReference Include="..\..\magic.endpoint\magic.endpoint\magic.endpoint.services\dev_magic.endpoint.services.csproj" />
     <ProjectReference Include="..\..\magic.io\magic.io.controller\dev_magic.io.controller.csproj" />
     <ProjectReference Include="..\..\magic.io\magic.io.services\dev_magic.io.services.csproj" />
+    <ProjectReference Include="..\..\magic.lambda.guid\magic.lambda.guid\dev_magic.lambda.guid.csproj" />
     <ProjectReference Include="..\..\magic.lambda.auth\magic.lambda.auth\dev_magic.lambda.auth.csproj" />
     <ProjectReference Include="..\..\magic.lambda.config\magic.lambda.config\dev_magic.lambda.config.csproj" />
     <ProjectReference Include="..\..\magic.lambda.crypto\magic.lambda.crypto\dev_magic.lambda.crypto.csproj" />

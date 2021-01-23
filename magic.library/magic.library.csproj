@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <PackageReference Include="magic.lambda" Version="8.9.*" />
+    <PackageReference Include="magic.lambda.guid" Version="8.9.*" />
     <PackageReference Include="magic.lambda.config" Version="8.9.*" />
     <PackageReference Include="magic.lambda.image" Version="8.9.*" />
     <PackageReference Include="magic.lambda.crypto" Version="8.9.*" />
