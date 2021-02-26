@@ -403,7 +403,19 @@ namespace magic.library
                 .TrimEnd('/') + "/";
 
             // Retrieving all folders inside of our "/modules/" folder.
-            foreach (var idxModules in Directory.GetDirectories(rootFolder + "modules/"))
+            var folders = new List<string>(Directory.GetDirectories(rootFolder + "modules/"));
+
+            // Making sure magic startup scripts are executed before anything else.
+            // This allows us to reference dynamic magic slots in other startup scripts.
+            folders.Sort((lhs, rhs) =>
+            {
+                if (lhs.Contains("/files/modules/magic/"))
+                    return -1;
+                if (rhs.Contains("/files/modules/magic/"))
+                    return 1;
+                return lhs.CompareTo(rhs);
+            });
+            foreach (var idxModules in folders)
             {
                 // Finding all folders inside of the currently iterated folder inside of "/modules/".
                 foreach (var idxModuleFolder in Directory.GetDirectories(idxModules))
