@@ -410,9 +410,9 @@ namespace magic.library
             // This allows us to reference dynamic magic slots in other startup scripts.
             folders.Sort((lhs, rhs) =>
             {
-                if (lhs.Contains("/files/modules/magic"))
+                if (lhs.Contains("/files/modules/system"))
                     return -1;
-                if (rhs.Contains("/files/modules/magic"))
+                if (rhs.Contains("/files/modules/system"))
                     return 1;
                 return lhs.CompareTo(rhs);
             });
