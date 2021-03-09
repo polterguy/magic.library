@@ -214,8 +214,8 @@ namespace magic.library
                         return Task.CompletedTask;
                     },
                 };
-                var httpOnly = configuration["magic:auth:http-only"] ?? "false";
-                x.RequireHttpsMetadata = httpOnly.ToLowerInvariant() == "true";
+                var httpsOnly = configuration["magic:auth:https-only"] ?? "false";
+                x.RequireHttpsMetadata = httpsOnly.ToLowerInvariant() == "true";
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
