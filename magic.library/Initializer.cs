@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
@@ -199,14 +200,29 @@ namespace magic.library
             })
             .AddJwtBearer(x =>
             {
-                x.RequireHttpsMetadata = false;
+                x.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = (context) =>
+                    {
+                        /*
+                         * If token exists in cookie, we default to using cookie instead of Authorization header.
+                         * This allows individual installations to use cookies to transmit JWT tokens, which arguably is more secure.
+                         */
+                        var cookie = context.Request.Cookies["ticket"];
+                        if (!string.IsNullOrEmpty(cookie))
+                            context.Token = cookie;
+                        return Task.CompletedTask;
+                    },
+                };
+                var httpOnly = configuration["magic:auth:http-only"] ?? "false";
+                x.RequireHttpsMetadata = httpOnly.ToLowerInvariant() == "true";
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
+                    ValidateIssuerSigningKey = false,
 
                     /*
                      * Notice, making sure we retrieve secret for each time it's needed.
