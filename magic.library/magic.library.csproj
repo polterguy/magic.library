@@ -47,6 +47,7 @@
     <PackageReference Include="magic.lambda.http" Version="8.9.*" />
     <PackageReference Include="magic.lambda.hyperlambda" Version="8.9.*" />
     <PackageReference Include="magic.lambda.io" Version="8.9.4" />
+    <PackageReference Include="magic.lambda.csv" Version="8.9.*" />
     <PackageReference Include="magic.lambda.json" Version="8.9.*" />
     <PackageReference Include="magic.lambda.html" Version="8.9.*" />
     <PackageReference Include="magic.lambda.logging" Version="8.9.*" />
