@@ -8,7 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{0080EF1F-A
 		.gitignore = .gitignore
 		LICENSE = LICENSE
 		README.md = README.md
-		LICENSE-AFFERO = LICENSE-AFFERO
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "magic.library", "magic.library\magic.library.csproj", "{E6F845C2-42D7-486B-91ED-F443823D8936}"
