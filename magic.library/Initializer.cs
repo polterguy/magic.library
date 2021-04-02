@@ -69,7 +69,7 @@ namespace magic.library
             services.AddMagicEndpoints(configuration);
             services.AddMagicFileServices();
             services.AddMagicAuthorization(configuration);
-            services.AddMagicScheduler(configuration);
+            services.AddMagicScheduler();
             services.AddMagicMail();
             services.AddLambda();
         }
@@ -96,12 +96,11 @@ namespace magic.library
         /// Adds the Magic Scheduler to your application
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        /// <param name="configuration">The configuration for your app.</param>
-        public static void AddMagicScheduler(this IServiceCollection services, IConfiguration configuration)
+        public static void AddMagicScheduler(this IServiceCollection services)
         {
             services.AddSingleton(
                 typeof(IScheduler),
-                svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>()), configuration));
+                svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>())));
         }
 
         /// <summary>
