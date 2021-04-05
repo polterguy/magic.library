@@ -37,6 +37,7 @@ using magic.lambda.mime.contracts;
 using magic.lambda.caching.helpers;
 using magic.lambda.logging.helpers;
 using magic.io.services.authorization;
+using magic.lambda.io.stream.services;
 using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
 using magic.endpoint.services.utilities;
@@ -141,10 +142,11 @@ namespace magic.library
             services.AddTransient<io.contracts.IFileService, FileService>();
 
             /*
-             * Associating the IFileServices and IFolderService with its default implementation.
+             * Associating the IFileServices, IFolderService and IStreamService with its default implementation.
              */
             services.AddTransient<lambda.io.contracts.IFileService, lambda.io.file.services.FileService>();
             services.AddTransient<IFolderService, lambda.io.folder.services.FolderService>();
+            services.AddTransient<IStreamService, StreamService>();
 
             /*
              * Making sure magic.io can only be used by "root" roles.
