@@ -60,13 +60,12 @@ namespace magic.library
         /// your server.</param>
         public static void AddMagic(
             this IServiceCollection services,
-            IConfiguration configuration,
-            string licenseKey = null)
+            IConfiguration configuration)
         {
             services.AddCaching();
             services.AddMagicHttp();
             services.AddMagicLogging();
-            services.AddMagicSignals(licenseKey);
+            services.AddMagicSignals();
             services.AddMagicEndpoints(configuration);
             services.AddMagicFileServices();
             services.AddMagicAuthorization(configuration);
@@ -276,9 +275,7 @@ namespace magic.library
         /// Configures magic.signals such that you can signal slots.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        /// <param name="licenseKey">The license key associated with
-        /// your installation.</param>
-        public static void AddMagicSignals(this IServiceCollection services, string licenseKey = null)
+        public static void AddMagicSignals(this IServiceCollection services)
         {
             /*
              * Loading all assemblies that are not loaded up for some reasons.
@@ -299,12 +296,6 @@ namespace magic.library
              */
             services.AddTransient<ISignaler, Signaler>();
             services.AddSingleton<ISignalsProvider>(new SignalsProvider(Slots(services)));
-
-            /*
-             * Checking if caller supplied a license key.
-             */
-            if (!string.IsNullOrEmpty(licenseKey) && licenseKey != "TRIAL-VERSION") // Default value in config file ...
-                Signaler.SetLicenseKey(licenseKey);
         }
 
         /// <summary>
