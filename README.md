@@ -59,14 +59,16 @@ However, you can also take more control over how things are actually wired up, b
 _"do all methods"_ called `AddMagic` and `UseMagic`, invoke some of the specialized initialization methods,
 you can find below.
 
+* `IServiceCollection.AddCaching`
 * `IServiceCollection.AddMagicHttp`
-* `IServiceCollection.AddMagicLog4netServices`
+* `IServiceCollection.AddMagicLogging`
 * `IServiceCollection.AddMagicSignals`
 * `IServiceCollection.AddMagicEndpoints`
 * `IServiceCollection.AddMagicFileServices`
 * `IServiceCollection.AddMagicAuthorization`
 * `IServiceCollection.AddMagicScheduler`
 * `IServiceCollection.AddMagicMail`
+* `IServiceCollection.AddLambda`
 
 The above methods is basically what the `AddMagic` method actually does, and they're extension methods of
 `IServiceCollection`, that can be found in the `magic.library` namespace. Similar alternatives to `UseMagic` can
