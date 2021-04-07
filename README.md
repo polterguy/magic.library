@@ -76,11 +76,12 @@ be found below.
 
 * `IApplicationBuilder.UseMagicExceptions`
 * `IApplicationBuilder.UseMagicStartupFiles`
+* `IApplicationBuilder.UseScheduler`
 
 If you use these methods instead of the _"do all methods"_, probably a large portion of your motivation would
 be to _replace_ one of these methods with your own implementation, to exchange the default wiring up, by (for instance)
 using a _"virtual database based file system"_ by creating your own service implementation of for instance `IFileService`
-from _"magic.lambda.io"_, or use a different logging provider than the default, which is log4net, etc. If you wish
+from _"magic.lambda.io"_, or use a different logging provider than the default, etc. If you wish
 to do this, you'd probably benefit from looking at what the default implementation of your method does, to understand the
 requirements from your method.
 
