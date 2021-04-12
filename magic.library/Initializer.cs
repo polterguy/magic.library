@@ -345,40 +345,13 @@ namespace magic.library
                 var ex = context.Features.Get<IExceptionHandlerPathFeature>();
                 if (ex != null)
                 {
+                    // Making sure we log exception.
                     var msg = ex.Error.Message ?? ex.GetType().FullName;
                     var logger = app.ApplicationServices.GetService(typeof(ILogger)) as ILogger;
                     await logger.ErrorAsync($"Unhandled exception occurred '{msg}' at '{ex.Path}'", ex.Error);
-                    JObject response;
 
-                    // Checking if exception is a HyperlambdaException, which is handled in a custom way.
-                    var hypEx = ex.Error as HyperlambdaException;
-                    if (hypEx != null)
-                    {
-                        context.Response.StatusCode = hypEx.Status;
-                        if (hypEx.IsPublic)
-                        {
-                            response = new JObject
-                            {
-                                ["message"] = msg,
-                            };
-                            if (!string.IsNullOrEmpty(hypEx.FieldName))
-                                response["field"] = hypEx.FieldName;
-                        }
-                        else
-                        {
-                            response = new JObject
-                            {
-                                ["message"] = "Guru meditation, come back when Universe is in order!"
-                            };
-                        }
-                    }
-                    else
-                    {
-                        response = new JObject
-                        {
-                            ["message"] = "Guru meditation, come back when Universe is in order!"
-                        };
-                    }
+                    // Making sure we return exception according to specifications to caller as JSON of some sort.
+                    JObject response = GetExceptionResult(ex, context, msg);
                     await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
                 }
                 else
@@ -454,6 +427,59 @@ namespace magic.library
         }
 
         #region [ -- Private helper methods -- ]
+
+        /*
+         * Helper method to create a JSON result from an exception, and returning
+         * the result to the caller.
+         */
+        static JObject GetExceptionResult(
+            IExceptionHandlerPathFeature ex,
+            HttpContext context,
+            string msg)
+        {
+            // Checking if exception is a HyperlambdaException, which is handled in a custom way.
+            var hypEx = ex.Error as HyperlambdaException;
+            if (hypEx != null)
+            {
+                /*
+                 * Checking if caller wants to expose exception details to client,
+                 * and retrieving status code, etc from exception details.
+                 */
+                context.Response.StatusCode = hypEx.Status;
+                if (hypEx.IsPublic)
+                {
+                    // Exception details is supposed to be publicly visible.
+                    var response = new JObject
+                    {
+                        ["message"] = msg,
+                    };
+
+                    /*
+                     * Checking if we've got a field name of some sort, which allows client
+                     * to semantically display errors related to validators, or fields of some sort,
+                     * creating more detailed feedback to the user.
+                     */
+                    if (!string.IsNullOrEmpty(hypEx.FieldName))
+                        response["field"] = hypEx.FieldName;
+                    return response;
+                }
+                else
+                {
+                    // Exception details is not supposed to be publicly visible.
+                    return new JObject
+                    {
+                        ["message"] = "Guru meditation, come back when Universe is in order!"
+                    };
+                }
+            }
+            else
+            {
+                return new JObject
+                {
+                    ["message"] = "Guru meditation, come back when Universe is in order!"
+                };
+            }
+        }
 
         /*
          * Will recursively execute every single Hyperlambda file inside of
