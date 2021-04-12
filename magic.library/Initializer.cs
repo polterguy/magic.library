@@ -56,8 +56,6 @@ namespace magic.library
         /// </summary>
         /// <param name="services">Your service collection.</param>
         /// <param name="configuration">The configuration for your app.</param>
-        /// <param name="licenseKey">The license key associated with
-        /// your server.</param>
         public static void AddMagic(
             this IServiceCollection services,
             IConfiguration configuration)
