@@ -402,11 +402,11 @@ namespace magic.library
                          * Checking if there's a magic.startup folder inside of
                          * the currently iterated sub-module folder.
                          */
-                        foreach (var idxSubModuleFolder in Directory.GetDirectories(idxModuleFolder))
+                        foreach (var idxSubModuleFolder in Directory
+                            .GetDirectories(idxModuleFolder)
+                            .Where(x => new DirectoryInfo(x).Name == "magic.startup"))
                         {
-                            var subModuleFolder = new DirectoryInfo(idxSubModuleFolder);
-                            if (subModuleFolder.Name == "magic.startup")
-                                ExecuteStartupFiles(signaler, idxSubModuleFolder);
+                            ExecuteStartupFiles(signaler, idxSubModuleFolder);
                         }
                     }
                 }
