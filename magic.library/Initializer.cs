@@ -377,24 +377,11 @@ namespace magic.library
         {
             // Creating a signaler and figuring out root path for dynamic Hyperlambda files.
             var signaler = app.ApplicationServices.GetService<ISignaler>();
-            var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files/")
-                .Replace("~", Directory.GetCurrentDirectory())
-                .Replace("\\", "/")
-                .TrimEnd('/') + "/";
 
-            // Retrieving all folders inside of our "/modules/" folder.
-            var folders = new List<string>(Directory.GetDirectories(rootFolder + "modules/"));
+            // Retrieving all module folders.
+            var folders = GetModuleFolders(configuration);
 
-            // Making sure magic startup scripts are executed before anything else.
-            // This allows us to reference dynamic magic slots in other startup scripts.
-            folders.Sort((lhs, rhs) =>
-            {
-                if (lhs.Contains("/files/modules/system"))
-                    return -1;
-                if (rhs.Contains("/files/modules/system"))
-                    return 1;
-                return lhs.CompareTo(rhs);
-            });
+            // Iterating through all module folders to make sure we execute startup files.
             foreach (var idxModules in folders)
             {
                 // Finding all folders inside of the currently iterated folder inside of "/modules/".
@@ -427,6 +414,34 @@ namespace magic.library
         }
 
         #region [ -- Private helper methods -- ]
+
+        /*
+         * Returns all module folders to caller.
+         */
+        static IEnumerable<string> GetModuleFolders(IConfiguration configuration)
+        {
+            var rootFolder = (configuration["magic:io:root-folder"] ?? "~/files/")
+                .Replace("~", Directory.GetCurrentDirectory())
+                .Replace("\\", "/")
+                .TrimEnd('/') + "/";
+
+            // Retrieving all folders inside of our "/modules/" folder.
+            var folders = new List<string>(Directory.GetDirectories(rootFolder + "modules/"));
+
+            // Making sure magic startup scripts are executed before anything else.
+            // This allows us to reference dynamic magic slots in other startup scripts.
+            folders.Sort((lhs, rhs) =>
+            {
+                if (lhs.Contains("/files/modules/system"))
+                    return -1;
+                if (rhs.Contains("/files/modules/system"))
+                    return 1;
+                return lhs.CompareTo(rhs);
+            });
+
+            // Returning folders to caller.
+            return folders;
+        }
 
         /*
          * Helper method to create a JSON result from an exception, and returning
