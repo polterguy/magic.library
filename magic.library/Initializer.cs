@@ -348,10 +348,18 @@ namespace magic.library
                     // Making sure we log exception.
                     var msg = ex.Error.Message ?? ex.GetType().FullName;
                     var logger = app.ApplicationServices.GetService(typeof(ILogger)) as ILogger;
-                    await logger.ErrorAsync($"Unhandled exception occurred '{msg}' at '{ex.Path}'", ex.Error);
+                    try
+                    {
+                        await logger.ErrorAsync($"Unhandled exception occurred '{msg}' at '{ex.Path}'", ex.Error);
+                    }
+                    catch
+                    {
+                        // silently catching to avoid new exception due to logger not configrued correctly ...
+                    }
 
                     // Making sure we return exception according to specifications to caller as JSON of some sort.
                     JObject response = GetExceptionResult(ex, context, msg);
+                    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
                     await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
                 }
                 else
