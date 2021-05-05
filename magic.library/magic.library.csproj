@@ -63,8 +63,8 @@
     <PackageReference Include="magic.io" Version="9.1.4" />
     <PackageReference Include="magic.signals" Version="9.1.4" />
     <PackageReference Include="magic.lambda.auth" Version="9.1.4" />
-    <PackageReference Include="magic.endpoint" Version="9.1.8" />
-    <PackageReference Include="magic.endpoint.services" Version="9.1.8" />
+    <PackageReference Include="magic.endpoint" Version="9.1.9" />
+    <PackageReference Include="magic.endpoint.services" Version="9.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
   </ItemGroup>
 </Project>
