@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Diagnostics;
@@ -70,6 +71,27 @@ namespace magic.library
             services.AddMagicScheduler();
             services.AddMagicMail();
             services.AddLambda();
+            services.AddSockets();
+        }
+
+        /*
+         * Internal class to ensure we're getting sane user IDs in SignalR hub.
+         */
+        internal class NameUserIdProvider : IUserIdProvider
+        {
+            public string GetUserId(HubConnectionContext connection)
+            {
+                return connection.User?.Identity?.Name;
+            }
+        }
+
+        /// <summary>
+        /// Adds the Magic sockets parts to your service collection.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddSockets(this IServiceCollection services)
+        {
+            services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
         }
 
         /// <summary>
