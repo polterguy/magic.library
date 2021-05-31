@@ -207,13 +207,13 @@ namespace magic.library
                          * This allows individual installations to use cookies to transmit JWT tokens, which
                          * arguably is more secure.
                          *
-                         * Notice, we also need to allow for SignalR requests to authenticate using QUERY parameters,
+                         * Notice, we also need to allow for sockets requests to authenticate using QUERY parameters,
                          * at which point we set token to value from 'access_token' QUERY param.
                          */
                         var cookie = context.Request.Cookies["ticket"];
                         if (!string.IsNullOrEmpty(cookie))
                             context.Token = cookie;
-                        else if (context.HttpContext.Request.Path.StartsWithSegments("/signalr") && context.Request.Query.ContainsKey("access_token"))
+                        else if (context.HttpContext.Request.Path.StartsWithSegments("/sockets") && context.Request.Query.ContainsKey("access_token"))
                             context.Token = context.Request.Query["access_token"];
                         return Task.CompletedTask;
                     },
