@@ -285,6 +285,7 @@ namespace magic.library
 
             // Configuring the default executor to execute dynamic URLs.
             services.AddTransient<IExecutorAsync, ExecutorAsync>();
+            services.AddTransient<IArgumentsHandler, ArgumentsHandler>();
         }
 
         /// <summary>
