@@ -74,17 +74,6 @@ namespace magic.library
             services.AddSockets();
         }
 
-        /*
-         * Internal class to ensure we're getting sane user IDs in SignalR hub.
-         */
-        internal class NameUserIdProvider : IUserIdProvider
-        {
-            public string GetUserId(HubConnectionContext connection)
-            {
-                return connection.User?.Identity?.Name;
-            }
-        }
-
         /// <summary>
         /// Adds the Magic sockets parts to your service collection.
         /// </summary>
