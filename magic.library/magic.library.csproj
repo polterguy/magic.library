@@ -57,7 +57,7 @@
     <PackageReference Include="magic.lambda.mssql" Version="9.2.0" />
     <PackageReference Include="magic.lambda.scheduler" Version="9.2.0" />
     <PackageReference Include="magic.lambda.slots" Version="9.2.0" />
-    <PackageReference Include="magic.lambda.strings" Version="9.2.0" />
+    <PackageReference Include="magic.lambda.strings" Version="9.3.5" />
     <PackageReference Include="magic.lambda.dates" Version="9.2.0" />
     <PackageReference Include="magic.lambda.validators" Version="9.1.7" />
     <PackageReference Include="magic.io" Version="9.2.0" />
