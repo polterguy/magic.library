@@ -408,31 +408,47 @@ namespace magic.library
             var folders = GetModuleFolders(configuration);
 
             // Iterating through all module folders to make sure we execute startup files.
-            foreach (var idxModules in folders)
+            foreach (var idxModule in folders)
             {
                 // Finding all folders inside of the currently iterated folder inside of "/modules/".
-                foreach (var idxModuleFolder in Directory.GetDirectories(idxModules))
+                foreach (var idxModuleFolder in Directory.GetDirectories(idxModule))
                 {
                     /*
-                     * Checking if this is a "startup folder", at which point we
-                     * execute all Hyperlambda files (recursively) inside of it.
+                     * Notice, in order to have one bogus app take down the entire app,
+                     * we wrap this guy inside a try/catch block.
                      */
-                    var folder = new DirectoryInfo(idxModuleFolder);
-                    if (folder.Name == "magic.startup")
-                    {
-                        ExecuteStartupFiles(signaler, idxModuleFolder);
-                    }
-                    else
+                    try
                     {
                         /*
-                         * Checking if there's a magic.startup folder inside of
-                         * the currently iterated sub-module folder.
-                         */
-                        foreach (var idxSubModuleFolder in Directory
-                            .GetDirectories(idxModuleFolder)
-                            .Where(x => new DirectoryInfo(x).Name == "magic.startup"))
+                        * Checking if this is a "startup folder", at which point we
+                        * execute all Hyperlambda files (recursively) inside of it.
+                        */
+                        var folder = new DirectoryInfo(idxModuleFolder);
+                        if (folder.Name == "magic.startup")
                         {
-                            ExecuteStartupFiles(signaler, idxSubModuleFolder);
+                            ExecuteStartupFiles(signaler, idxModuleFolder);
+                        }
+                        else
+                        {
+                            /*
+                            * Checking if there's a magic.startup folder inside of
+                            * the currently iterated sub-module folder.
+                            */
+                            foreach (var idxSubModuleFolder in Directory
+                                .GetDirectories(idxModuleFolder)
+                                .Where(x => new DirectoryInfo(x).Name == "magic.startup"))
+                            {
+                                ExecuteStartupFiles(signaler, idxSubModuleFolder);
+                            }
+                        }
+                    }
+                    catch (Exception err)
+                    {
+                        // Verifying system has been configured before attempting to log error.
+                        if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
+                        {
+                            var logger = app.ApplicationServices.GetService<ILogger>();
+                            logger.Error($"Exception occurred as we tried to initialise module '{idxModule}', message from system was '{err.Message}'", err);
                         }
                     }
                 }
