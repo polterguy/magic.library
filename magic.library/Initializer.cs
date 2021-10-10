@@ -24,6 +24,7 @@ using magic.io.services;
 using magic.io.contracts;
 using magic.http.services;
 using magic.http.contracts;
+using magic.node.extensions;
 using magic.lambda.threading;
 using magic.signals.services;
 using magic.lambda.exceptions;
@@ -354,82 +355,10 @@ namespace magic.library
         public static void UseMagicExceptions(this IApplicationBuilder app)
         {
             /*
-             * Making sure we're storing errors into our log file, and that
-             * we're able to return the exception message to client.
+             * Making sure we're handling exceptions correctly
+             * according to how installation is configured.
              */
-            app.UseExceptionHandler(errorApp => errorApp.Run(async context =>
-            {
-                context.Response.StatusCode = 500;
-                context.Response.ContentType = "application/json";
-                var ex = context.Features.Get<IExceptionHandlerPathFeature>();
-                if (ex != null)
-                {
-                    // Figuring out message, and defaulting to type's full name of not specified.
-                    var msg = ex.Error.Message ?? ex.GetType().FullName;
-
-                    /*
-                     * Figuring out sections of path of invocation,
-                     * removing last part which is the filename we're executing, in addition
-                     * to the virtual "magic" parts.
-                     */
-                    var handled = false;
-                    var sections = ex.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                    var folders = sections
-                        .Skip(1)
-                        .Take(sections.Count() - 1);
-
-                    while (folders.Count() > 0)
-                    {
-                        // Checking if we can find en "exception-handler.hl" file in current folder.
-                        var path = Utilities.RootFolder + string.Join("/", folders) + "/" + "exception-handler.hl";
-                        if (File.Exists(path))
-                        {
-                            // File exists, invoking it as a Hyperlambda file passing in exception arguments.
-                            var lambda = new Parser(await File.ReadAllTextAsync(path)).Lambda();
-                            var args = new Node(".arguments");
-                            args.Add(new Node("message", msg));
-                            args.Add(new Node("path", ex.Path));
-                            lambda.Insert(0, args);
-                            var signaler = app.ApplicationServices.GetService<ISignaler>();
-                            await signaler.SignalAsync("eval", lambda);
-
-                            // Exception was handled.
-                            handled = true;
-                            break;
-                        }
-
-                        // Removing last folder.
-                        folders = folders.Take(folders.Count() - 1);
-                    }
-
-                    if (handled)
-                    {
-                        // Last resort which is to make sure we log exception.
-                        var logger = app.ApplicationServices.GetService<ILogger>();
-                        try
-                        {
-                            await logger.ErrorAsync($"Unhandled exception occurred '{msg}' at '{ex.Path}'", ex.Error);
-                        }
-                        catch
-                        {
-                            // Silently catching to avoid new exception due to logger not configrued correctly ...
-                        }
-                    }
-
-                    // Making sure we return exception according to specifications to caller as JSON of some sort.
-                    JObject response = GetExceptionResult(ex, context, msg);
-                    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                    await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
-                }
-                else
-                {
-                    var response = new JObject
-                    {
-                        ["message"] = "Guru meditation, come back when Universe is in order!",
-                    };
-                    await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
-                }
-            }));
+            app.UseExceptionHandler(errorApp => errorApp.Run(async context => await HandleException(app, context)));
         }
 
         /// <summary>
@@ -524,6 +453,112 @@ namespace magic.library
 
             // Returning folders to caller.
             return folders;
+        }
+
+        /*
+         * Invoked when an unhandled exception occurs.
+         */
+        static async Task HandleException(IApplicationBuilder app, HttpContext context)
+        {
+            // Defaulting status code and response Content-Type.
+            context.Response.StatusCode = 500;
+            context.Response.ContentType = "application/json";
+
+            // Getting the path of the unhandled exception.
+            var ex = context.Features.Get<IExceptionHandlerPathFeature>();
+
+            // Ensuring we have access to the exception handler path feature before proceeding.
+            if (ex != null)
+            {
+                // Checking if we have a custom handler, and invoking it if we have one.
+                var handled = await TryCustomExceptionHandler(ex, app, context);
+
+                // Last resort handler which is to make sure we log exception as an error.
+                if (!handled)
+                {
+                    var logger = app.ApplicationServices.GetService<ILogger>();
+                    try
+                    {
+                        await logger.ErrorAsync($"Unhandled exception occurred '{ex.Error.Message}' at '{ex.Path}'", ex.Error);
+                    }
+                    catch
+                    {
+                        ;// Silently catching to avoid new exception due to logger not being configured correctly ...
+                    }
+
+                    // Making sure we return exception according to specifications to caller as JSON of some sort.
+                    JObject response = GetExceptionResult(ex, context, ex.Error.Message);
+                    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                    await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
+                }
+            }
+        }
+
+        /*
+         * Tries to execute custom exception handler, and if we can find a custom handler,
+         * returning true to caller - Otherwise returning false.
+         */
+        static async Task<bool> TryCustomExceptionHandler(
+            IExceptionHandlerPathFeature ex,
+            IApplicationBuilder app,
+            HttpContext context)
+        {
+            /*
+             * Figuring out sections of path of invocation,
+             * removing last part which is the filename we're executing, in addition
+             * to the virtual "magic" parts.
+             */
+            var sections = ex.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            var folders = sections
+                .Skip(1)
+                .Take(sections.Count() - 2);
+
+            // Iterating upwards in hierarchy to see if we have a custom exception handler in folders upwards.
+            while (true)
+            {
+                // Checking if we can find en "exception-handler.hl" file in current folder.
+                var filename = string.Join("/", folders) + "/" + "exceptions.hl";
+                var path = Utilities.RootFolder + filename;
+                if (File.Exists(path))
+                {
+                    // File exists, invoking it as a Hyperlambda file passing in exception arguments.
+                    var args = new Node("", filename);
+                    args.Add(new Node("message", ex.Error.Message));
+                    args.Add(new Node("path", ex.Path));
+                    var hypEx = ex.Error as HyperlambdaException;
+                    if (hypEx != null)
+                    {
+                        if (!string.IsNullOrEmpty(hypEx.FieldName))
+                            args.Add(new Node("field", hypEx.FieldName));
+                        args.Add(new Node("status", hypEx.Status));
+                        args.Add(new Node("public", hypEx.IsPublic));
+                    }
+                    var signaler = app.ApplicationServices.GetService<ISignaler>();
+                    await signaler.SignalAsync("io.file.execute", args);
+
+                    // Returning response according to result of above invocation.
+                    JObject response = new JObject
+                    {
+                        ["message"] = args.Children.FirstOrDefault(x => x.Name == "message")?.Get<string>() ?? 
+                            "Guru meditation, come back when Universe is in order!",
+                    };
+                    var field = args.Children.FirstOrDefault(x => x.Name == "field")?.Get<string>();
+                    if (!string.IsNullOrEmpty(field))
+                        response["field"] = field;
+                    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                    context.Response.StatusCode = args.Children.FirstOrDefault(x => x.Name == "status")?.Get<int>() ?? 500;
+                    await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
+
+                    // Exception was handled.
+                    return true;
+                }
+
+                if (!folders.Any())
+                    return false;
+
+                // Removing last folder and continuing iteration.
+                folders = folders.Take(folders.Count() - 1);
+            }
         }
 
         /*
