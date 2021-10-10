@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Newtonsoft.Json.Linq;
+using magic.node;
 using magic.io.services;
 using magic.io.contracts;
 using magic.http.services;
@@ -363,16 +364,56 @@ namespace magic.library
                 var ex = context.Features.Get<IExceptionHandlerPathFeature>();
                 if (ex != null)
                 {
-                    // Making sure we log exception.
+                    // Figuring out message, and defaulting to type's full name of not specified.
                     var msg = ex.Error.Message ?? ex.GetType().FullName;
-                    var logger = app.ApplicationServices.GetService(typeof(ILogger)) as ILogger;
-                    try
+
+                    /*
+                     * Figuring out sections of path of invocation,
+                     * removing last part which is the filename we're executing, in addition
+                     * to the virtual "magic" parts.
+                     */
+                    var handled = false;
+                    var sections = ex.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                    var folders = sections
+                        .Skip(1)
+                        .Take(sections.Count() - 1);
+
+                    while (folders.Count() > 0)
                     {
-                        await logger.ErrorAsync($"Unhandled exception occurred '{msg}' at '{ex.Path}'", ex.Error);
+                        // Checking if we can find en "exception-handler.hl" file in current folder.
+                        var path = Utilities.RootFolder + string.Join("/", folders) + "/" + "exception-handler.hl";
+                        if (File.Exists(path))
+                        {
+                            // File exists, invoking it as a Hyperlambda file passing in exception arguments.
+                            var lambda = new Parser(await File.ReadAllTextAsync(path)).Lambda();
+                            var args = new Node(".arguments");
+                            args.Add(new Node("message", msg));
+                            args.Add(new Node("path", ex.Path));
+                            lambda.Insert(0, args);
+                            var signaler = app.ApplicationServices.GetService<ISignaler>();
+                            await signaler.SignalAsync("eval", lambda);
+
+                            // Exception was handled.
+                            handled = true;
+                            break;
+                        }
+
+                        // Removing last folder.
+                        folders = folders.Take(folders.Count() - 1);
                     }
-                    catch
+
+                    if (handled)
                     {
-                        // silently catching to avoid new exception due to logger not configrued correctly ...
+                        // Last resort which is to make sure we log exception.
+                        var logger = app.ApplicationServices.GetService<ILogger>();
+                        try
+                        {
+                            await logger.ErrorAsync($"Unhandled exception occurred '{msg}' at '{ex.Path}'", ex.Error);
+                        }
+                        catch
+                        {
+                            // Silently catching to avoid new exception due to logger not configrued correctly ...
+                        }
                     }
 
                     // Making sure we return exception according to specifications to caller as JSON of some sort.
