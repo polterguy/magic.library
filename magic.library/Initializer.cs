@@ -483,7 +483,7 @@ namespace magic.library
                     }
                     catch
                     {
-                        ;// Silently catching to avoid new exception due to logger not being configured correctly ...
+                        // Silently catching to avoid new exception due to logger not being configured correctly ...
                     }
 
                     // Making sure we return exception according to specifications to caller as JSON of some sort.
@@ -511,7 +511,7 @@ namespace magic.library
             var sections = ex.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
             var folders = sections
                 .Skip(1)
-                .Take(sections.Count() - 2);
+                .Take(sections.Length - 2);
 
             // Iterating upwards in hierarchy to see if we have a custom exception handler in folders upwards.
             while (true)
