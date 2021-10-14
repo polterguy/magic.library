@@ -311,6 +311,10 @@ namespace magic.library
             services.AddSingleton<ISignalsProvider>(new SignalsProvider(Slots(services)));
         }
 
+        /// <summary>
+        /// Donfigures Magic exceptions allowing you to handle exceptions with your own "exceptions.hl" files.
+        /// </summary>
+        /// <param name="services">Service collection</param>
         public static void AddMagicExceptions(this IServiceCollection services)
         {
             services.AddTransient<IExceptionHandler, ExceptionHandler>();
