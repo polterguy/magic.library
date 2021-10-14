@@ -64,54 +64,23 @@ namespace magic.library.internals
              * to the virtual "magic" parts of the URL.
              */
             var sections = ex.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            var folders = sections.Skip(1).Take(sections.Length - 2);
+            var folders = sections
+                .Skip(1)
+                .Take(sections.Length - 2);
 
             // Iterating upwards in hierarchy to see if we have a custom exception handler in folders upwards.
             while (true)
             {
                 // Checking if we can find en "exceptions.hl" file in currently iterated folder.
-                var filename = string.Join("/", folders) + "/" + "exceptions.hl";
-                var path = Utilities.RootFolder + filename;
-                if (File.Exists(path))
-                {
-                    // File exists, invoking it as a Hyperlambda file passing in exception arguments.
-                    var args = new Node("", filename);
-                    args.Add(new Node("message", ex.Error.Message));
-                    args.Add(new Node("path", ex.Path));
-                    args.Add(new Node("stack", ex.Error.StackTrace));
-                    args.Add(new Node("source", ex.Error.Source));
+                var filename = (Utilities.RootFolder + string.Join("/", folders)).TrimEnd('/') + "/" + "exceptions.hl";
 
-                    /*
-                     * Checking if this is a Hyperlambda exception, at which point we further
-                     * parametrise invocation to exception file invocation with properties
-                     * from Hyperlambda exception class.
-                     */
-                    if (ex.Error is HyperlambdaException hypEx)
-                    {
-                        if (!string.IsNullOrEmpty(hypEx.FieldName))
-                            args.Add(new Node("field", hypEx.FieldName));
-                        args.Add(new Node("status", hypEx.Status));
-                        args.Add(new Node("public", hypEx.IsPublic));
-                    }
-                    var signaler = app.ApplicationServices.GetService<ISignaler>();
-                    await signaler.SignalAsync("io.file.execute", args);
-
-                    // Returning response according to result of above invocation.
-                    var msg = args.Children.FirstOrDefault(x => x.Name == "message")?.Get<string>();
-                    var response = new JObject
-                    {
-                        ["message"] = msg ?? GetDefaultExceptionMessage(),
-                    };
-                    var field = args.Children.FirstOrDefault(x => x.Name == "field")?.Get<string>();
-                    if (!string.IsNullOrEmpty(field))
-                        response["field"] = field;
-                    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                    context.Response.StatusCode = args.Children.FirstOrDefault(x => x.Name == "status")?.Get<int>() ?? 500;
-                    await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
-
-                    // Exception was handled.
-                    return true;
-                }
+                // Checking if file exists, and if so, passing on responsibility for handling exception to the file.
+                if (File.Exists(filename))
+                    return await CustomHandler(
+                        app,
+                        ex,
+                        context,
+                        string.Join("/", folders) + "/" + "exceptions.hl");
 
                 // Checking if we have more folders to traverse upwards in hierarchy.
                 if (!folders.Any())
@@ -120,6 +89,66 @@ namespace magic.library.internals
                 // Removing last folder and continuing iteration.
                 folders = folders.Take(folders.Count() - 1);
             }
+        }
+
+        /*
+         * Invoked when a custom exception handler Hyperlambda file is found.
+         */
+        async Task<bool> CustomHandler(
+            IApplicationBuilder app,
+            IExceptionHandlerPathFeature ex,
+            HttpContext context,
+            string file)
+        {
+            // Creating arguments to exception handler file.
+            var args = new Node("", file);
+            args.Add(new Node("message", ex.Error.Message));
+            args.Add(new Node("path", ex.Path));
+            args.Add(new Node("stack", ex.Error.StackTrace));
+            args.Add(new Node("source", ex.Error.Source));
+
+            /*
+             * Checking if this is a Hyperlambda exception, at which point we further
+             * parametrise invocation to exception file invocation with properties
+             * from Hyperlambda exception class.
+             */
+            if (ex.Error is HyperlambdaException hypEx)
+            {
+                if (!string.IsNullOrEmpty(hypEx.FieldName))
+                    args.Add(new Node("field", hypEx.FieldName));
+                args.Add(new Node("status", hypEx.Status));
+                args.Add(new Node("public", hypEx.IsPublic));
+            }
+
+            // Executing file passing in arguments created above.
+            var signaler = app.ApplicationServices.GetService<ISignaler>();
+            await signaler.SignalAsync("io.file.execute", args);
+
+            /*
+             * Returning response according to result of above invocation,
+             * making sure we return default message if no message was returned from
+             * Hyperlambda file.
+             */
+            var msg = args.Children.FirstOrDefault(x => x.Name == "message")?.Get<string>();
+            var response = new JObject
+            {
+                ["message"] = msg ?? GetDefaultExceptionMessage(),
+            };
+
+            // Further decorating response object according to file's return value.
+            var field = args.Children.FirstOrDefault(x => x.Name == "field")?.Get<string>();
+            if (!string.IsNullOrEmpty(field))
+                response["field"] = field;
+
+            // Making sure exception response is available for client.
+            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+
+            // Decorating status code for HTTP response.
+            context.Response.StatusCode = args.Children.FirstOrDefault(x => x.Name == "status")?.Get<int>() ?? 500;
+
+            // Writing exception to response and returning success.
+            await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
+            return true;
         }
 
         /*
@@ -143,7 +172,7 @@ namespace magic.library.internals
             }
 
             // Making sure we return exception according to specifications to caller as JSON of some sort.
-            var response = GetExceptionResponse(ex, context, ex.Error.Message);
+            var response = GetDefaultExceptionResponse(ex, context, ex.Error.Message);
             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
             await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
         }
@@ -152,7 +181,7 @@ namespace magic.library.internals
          * Helper method to create a JSON result from an exception, and returning
          * the result to the caller.
          */
-        JObject GetExceptionResponse(
+        JObject GetDefaultExceptionResponse(
             IExceptionHandlerPathFeature ex,
             HttpContext context,
             string msg)
