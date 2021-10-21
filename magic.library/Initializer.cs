@@ -131,9 +131,7 @@ namespace magic.library
         }
 
         /// <summary>
-        /// Wires up magic.io to use the default file service, and the
-        /// AuthorizeOnlyRole authorization scheme, to only allow the "root"
-        /// role to read and write files from your server using magic.io.
+        /// Wires up magic.lambda.io to use the default file, folder and stream service.
         /// </summary>
         /// <param name="services">Your service collection.</param>
         public static void AddMagicFileServices(this IServiceCollection services)
@@ -147,8 +145,8 @@ namespace magic.library
 
             /*
              * Associating the root folder resolver with our own internal class,
-             * that resolves the root folder for magic.io to be the config
-             * setting "magic:io:root-folder", or if not given "/files".
+             * that resolves the root folder for magic.lambda.io to be the config
+             * setting "magic:io:root-folder", or if not given "~/files".
              */
             services.AddTransient<IRootResolver, RootResolver>();
         }
