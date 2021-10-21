@@ -16,8 +16,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using magic.io.services;
-using magic.io.contracts;
 using magic.http.services;
 using magic.http.contracts;
 using magic.lambda.threading;
@@ -33,7 +31,6 @@ using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
 using magic.lambda.caching.helpers;
 using magic.lambda.logging.helpers;
-using magic.io.services.authorization;
 using magic.lambda.io.stream.services;
 using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
@@ -142,21 +139,11 @@ namespace magic.library
         public static void AddMagicFileServices(this IServiceCollection services)
         {
             /*
-             * Associating the IFileServices with its default implementation.
-             */
-            services.AddTransient<io.contracts.IFileService, FileService>();
-
-            /*
              * Associating the IFileServices, IFolderService and IStreamService with its default implementation.
              */
             services.AddTransient<lambda.io.contracts.IFileService, lambda.io.file.services.FileService>();
             services.AddTransient<IFolderService, lambda.io.folder.services.FolderService>();
             services.AddTransient<IStreamService, StreamService>();
-
-            /*
-             * Making sure magic.io can only be used by "root" roles.
-             */
-            services.AddSingleton<IAuthorize>((svc) => new AuthorizeOnlyRoles("root"));
 
             /*
              * Associating the root folder resolver with our own internal class,
