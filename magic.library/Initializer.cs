@@ -16,8 +16,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using magic.http.services;
-using magic.http.contracts;
 using magic.lambda.threading;
 using magic.signals.services;
 using magic.signals.contracts;
@@ -126,7 +124,6 @@ namespace magic.library
         /// <param name="services">Your service collection.</param>
         public static void AddMagicHttp(this IServiceCollection services)
         {
-            services.AddTransient<IHttpClient, HttpClient>();
             services.AddHttpClient();
         }
 
