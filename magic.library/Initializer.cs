@@ -23,8 +23,10 @@ using magic.endpoint.services;
 using magic.library.internals;
 using magic.endpoint.contracts;
 using magic.lambda.io.contracts;
+using magic.lambda.http.services;
 using magic.lambda.auth.services;
 using magic.lambda.mime.services;
+using magic.lambda.http.contracts;
 using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
 using magic.lambda.caching.helpers;
@@ -125,6 +127,7 @@ namespace magic.library
         public static void AddMagicHttp(this IServiceCollection services)
         {
             services.AddHttpClient();
+            services.AddTransient<IMagicHttp, MagicHttp>();
         }
 
         /// <summary>
