@@ -42,7 +42,7 @@
     <PackageReference Include="magic.lambda.guid" Version="9.8.0" />
     <PackageReference Include="magic.lambda.config" Version="9.8.0" />
     <PackageReference Include="magic.lambda.image" Version="9.8.0" />
-    <PackageReference Include="magic.lambda.crypto" Version="9.8.0" />
+    <PackageReference Include="magic.lambda.crypto" Version="9.8.4" />
     <PackageReference Include="magic.lambda.http" Version="9.8.3" />
     <PackageReference Include="magic.lambda.hyperlambda" Version="9.8.0" />
     <PackageReference Include="magic.lambda.io" Version="9.8.0" />
