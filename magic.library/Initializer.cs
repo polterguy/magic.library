@@ -457,9 +457,11 @@ namespace magic.library
             // Startup folder, now executing all Hyperlambda files inside of it.
             foreach (var idxFile in Directory.GetFiles(folder, "*.hl"))
             {
-                using var stream = File.OpenRead(idxFile);
-                var lambda = new Parser(stream).Lambda();
-                signaler.Signal("eval", lambda);
+                using (var stream = File.OpenRead(idxFile))
+                {
+                    var lambda = HyperlambdaParser.Parse(stream);
+                    signaler.Signal("eval", lambda);
+                }
             }
 
             // Recursively checking sub folders.
