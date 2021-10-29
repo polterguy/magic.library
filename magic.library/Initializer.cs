@@ -373,6 +373,36 @@ namespace magic.library
             // Iterating through all module folders to make sure we execute startup files.
             foreach (var idxModule in folders)
             {
+                /*
+                 * Checking if this is a "startup folder", at which point we
+                 * execute all Hyperlambda files (recursively) inside of it.
+                 */
+                try
+                {
+                    var folder = new DirectoryInfo(idxModule);
+                    if (folder.Name == "magic.startup")
+                    {
+                        ExecuteStartupFiles(signaler, idxModule);
+                    }
+                }
+                catch (Exception err)
+                {
+                    // Verifying system has been configured before attempting to log error.
+                    if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
+                    {
+                        try
+                        {
+                            var logger = app.ApplicationServices.GetService<ILogger>();
+                            logger.Error($"Exception occurred as we tried to initialise module '{idxModule}', message from system was '{err.Message}'", err);
+                        }
+                        catch (Exception error)
+                        {
+                            // Nothing to do here really ...
+                            Console.WriteLine(error.Message);
+                        }
+                    }
+                }
+
                 // Finding all folders inside of the currently iterated folder inside of "/modules/".
                 foreach (var idxModuleFolder in Directory.GetDirectories(idxModule))
                 {
@@ -383,9 +413,9 @@ namespace magic.library
                     try
                     {
                         /*
-                        * Checking if this is a "startup folder", at which point we
-                        * execute all Hyperlambda files (recursively) inside of it.
-                        */
+                         * Checking if this is a "startup folder", at which point we
+                         * execute all Hyperlambda files (recursively) inside of it.
+                         */
                         var folder = new DirectoryInfo(idxModuleFolder);
                         if (folder.Name == "magic.startup")
                         {
@@ -394,9 +424,9 @@ namespace magic.library
                         else
                         {
                             /*
-                            * Checking if there's a magic.startup folder inside of
-                            * the currently iterated sub-module folder.
-                            */
+                             * Checking if there's a magic.startup folder inside of
+                             * the currently iterated sub-module folder.
+                             */
                             foreach (var idxSubModuleFolder in Directory
                                 .GetDirectories(idxModuleFolder)
                                 .Where(x => new DirectoryInfo(x).Name == "magic.startup"))
@@ -410,8 +440,16 @@ namespace magic.library
                         // Verifying system has been configured before attempting to log error.
                         if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
                         {
-                            var logger = app.ApplicationServices.GetService<ILogger>();
-                            logger.Error($"Exception occurred as we tried to initialise module '{idxModule}', message from system was '{err.Message}'", err);
+                            try
+                            {
+                                var logger = app.ApplicationServices.GetService<ILogger>();
+                                logger.Error($"Exception occurred as we tried to initialise module '{idxModule}', message from system was '{err.Message}'", err);
+                            }
+                            catch (Exception error)
+                            {
+                                // Nothing to do here really ...
+                                Console.WriteLine(error.Message);
+                            }
                         }
                     }
                 }
@@ -431,18 +469,8 @@ namespace magic.library
                 .TrimEnd('/') + "/";
 
             // Retrieving all folders inside of our "/modules/" folder.
-            var folders = new List<string>(Directory.GetDirectories(rootFolder + "modules/"));
-
-            // Making sure magic startup scripts are executed before anything else.
-            // This allows us to reference dynamic magic slots in other startup scripts.
-            folders.Sort((lhs, rhs) =>
-            {
-                if (lhs.Contains("/files/modules/system"))
-                    return -1;
-                if (rhs.Contains("/files/modules/system"))
-                    return 1;
-                return lhs.CompareTo(rhs);
-            });
+            var folders = new List<string>(Directory.GetDirectories(rootFolder + "system/"));
+            folders.AddRange(new List<string>(Directory.GetDirectories(rootFolder + "modules/")));
 
             // Returning folders to caller.
             return folders;
