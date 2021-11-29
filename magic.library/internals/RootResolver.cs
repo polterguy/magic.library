@@ -3,8 +3,8 @@
  */
 
 using System.IO;
-using magic.lambda.io.contracts;
 using Microsoft.Extensions.Configuration;
+using magic.lambda.io.contracts;
 
 namespace magic.library.internals
 {
