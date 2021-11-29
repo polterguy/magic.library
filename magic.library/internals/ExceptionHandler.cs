@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using magic.node;
 using magic.node.extensions;
-using magic.lambda.exceptions;
 using magic.signals.contracts;
 using magic.lambda.logging.helpers;
 using magic.endpoint.services.utilities;

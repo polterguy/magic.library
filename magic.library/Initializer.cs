@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using magic.node.extensions;
 using magic.lambda.threading;
 using magic.signals.services;
 using magic.signals.contracts;
@@ -178,7 +179,7 @@ namespace magic.library
              */
             var secret = configuration["magic:auth:secret"];
             if (string.IsNullOrEmpty(secret))
-                throw new ArgumentException("Couldn't find any 'magic:auth:secret' configuration settings in your appSettings.json file. Magic can never be secure unless you provide this configuration setting.");
+                throw new HyperlambdaException("Couldn't find any 'magic:auth:secret' configuration settings in your appSettings.json file. Magic can never be secure unless you provide this configuration setting.");
 
             /*
              * Wiring up .Net Core to use JWT Bearer tokens for auth.
