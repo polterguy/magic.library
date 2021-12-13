@@ -379,11 +379,8 @@ namespace magic.library
                  */
                 try
                 {
-                    var folder = new DirectoryInfo(idxModule);
-                    if (folder.Name == "magic.startup")
-                    {
+                    if (new DirectoryInfo(idxModule).Name == "magic.startup")
                         ExecuteStartupFiles(signaler, idxModule);
-                    }
                 }
                 catch (Exception err)
                 {
