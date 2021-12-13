@@ -58,9 +58,9 @@
     <PackageReference Include="magic.lambda.math" Version="9.9.9" />
     <PackageReference Include="magic.lambda.mail" Version="9.9.9" />
     <PackageReference Include="magic.lambda.mime" Version="10.0.0" />
-    <PackageReference Include="magic.lambda.mysql" Version="9.9.9" />
+    <PackageReference Include="magic.lambda.mysql" Version="10.0.1" />
     <PackageReference Include="magic.lambda.pgsql" Version="10.0.1" />
-    <PackageReference Include="magic.lambda.mssql" Version="9.9.9" />
+    <PackageReference Include="magic.lambda.mssql" Version="10.0.1" />
     <PackageReference Include="magic.lambda.scheduler" Version="9.9.9" />
     <PackageReference Include="magic.lambda.slots" Version="9.9.9" />
     <PackageReference Include="magic.lambda.strings" Version="9.9.9" />
