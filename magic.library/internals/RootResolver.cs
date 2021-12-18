@@ -17,6 +17,19 @@ namespace magic.library.internals
                 .TrimEnd('/') + "/";
         }
 
+        /// </inheritdocs>
         public string RootFolder { get; }
-    }
+
+        /// </inheritdocs>
+        public string RelativePath(string path)
+        {
+            return path.Substring(RootFolder.Length - 1);
+        }
+
+        /// </inheritdocs>
+        public string AbsolutePath(string path)
+        {
+            return RootFolder + path.TrimStart(new char[] { '/', '\\' });
+        }
+   }
 }

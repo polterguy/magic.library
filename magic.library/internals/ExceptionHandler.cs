@@ -76,7 +76,7 @@ namespace magic.library.internals
             while (true)
             {
                 // Checking if we can find en "exceptions.hl" file in currently iterated folder.
-                var filename = (rootResolver.RootFolder + string.Join("/", folders)).TrimEnd('/') + "/" + "exceptions.hl";
+                var filename = rootResolver.AbsolutePath(string.Join("/", folders).TrimEnd('/') + "/" + "exceptions.hl");
 
                 // Checking if file exists, and if so, passing on responsibility for handling exception to the file.
                 if (fileService.Exists(filename))
