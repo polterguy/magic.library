@@ -14,6 +14,7 @@ namespace magic.library.internals
         {
             RootFolder = (configuration["magic:io:root-folder"] ?? "~/files/")
                 .Replace("~", Directory.GetCurrentDirectory())
+                .Replace("\\", "/")
                 .TrimEnd('/') + "/";
         }
 
@@ -23,13 +24,15 @@ namespace magic.library.internals
         /// </inheritdocs>
         public string RelativePath(string path)
         {
+            // Making sure we remove RootFolder, but keep the initial slash (/).
             return path.Substring(RootFolder.Length - 1);
         }
 
         /// </inheritdocs>
         public string AbsolutePath(string path)
         {
-            return RootFolder + path.TrimStart(new char[] { '/', '\\' });
+            // RootFolder should always start with a slash (/).
+            return RootFolder + path.Replace("\\", "/").TrimStart('/');
         }
    }
 }
