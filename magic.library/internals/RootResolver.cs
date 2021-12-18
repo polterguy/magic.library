@@ -4,7 +4,7 @@
 
 using System.IO;
 using Microsoft.Extensions.Configuration;
-using magic.lambda.io.contracts;
+using magic.node.contracts;
 
 namespace magic.library.internals
 {

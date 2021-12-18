@@ -15,6 +15,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using magic.node.services;
+using magic.node.contracts;
 using magic.node.extensions;
 using magic.lambda.threading;
 using magic.signals.services;
@@ -22,7 +24,6 @@ using magic.signals.contracts;
 using magic.endpoint.services;
 using magic.library.internals;
 using magic.endpoint.contracts;
-using magic.lambda.io.contracts;
 using magic.lambda.http.services;
 using magic.lambda.auth.services;
 using magic.lambda.mime.services;
@@ -31,7 +32,6 @@ using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
 using magic.lambda.caching.helpers;
 using magic.lambda.logging.helpers;
-using magic.lambda.io.stream.services;
 using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
 using magic.endpoint.services.utilities;
@@ -139,8 +139,8 @@ namespace magic.library
             /*
              * Associating the IFileServices, IFolderService and IStreamService with its default implementation.
              */
-            services.AddTransient<lambda.io.contracts.IFileService, lambda.io.file.services.FileService>();
-            services.AddTransient<IFolderService, lambda.io.folder.services.FolderService>();
+            services.AddTransient<IFileService, FileService>();
+            services.AddTransient<IFolderService, FolderService>();
             services.AddTransient<IStreamService, StreamService>();
 
             /*
