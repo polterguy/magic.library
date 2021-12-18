@@ -241,19 +241,6 @@ namespace magic.library
         /// <param name="configuration">Your apps configuration.</param>
         public static void AddMagicEndpoints(this IServiceCollection services, IConfiguration configuration)
         {
-            /*
-             * Figuring out which folder to resolve dynamic Hyperlambda files from,
-             * and making sure we configure the Hyperlambda resolver to use the correct
-             * folder.
-             */
-            var rootFolder = configuration["magic:endpoint:root-folder"] ?? "~/files/";
-            rootFolder = rootFolder
-                .Replace("~", Directory.GetCurrentDirectory())
-                .Replace("\\", "/")
-                .TrimEnd('/') + 
-                "/";
-            Utilities.RootFolder = rootFolder;
-
             // Configuring the default executor to execute dynamic URLs.
             services.AddTransient<IHttpExecutorAsync, HttpExecutorAsync>();
             services.AddTransient<IHttpArgumentsHandler, HttpArgumentsHandler>();
@@ -350,7 +337,9 @@ namespace magic.library
             app.UseExceptionHandler(errorApp => errorApp.Run(async context =>
             {
                 var handler = errorApp.ApplicationServices.GetService<IExceptionHandler>();
-                await handler.HandleException(errorApp, context);
+                var rootResolver = errorApp.ApplicationServices.GetService<IRootResolver>();
+                var fileService = errorApp.ApplicationServices.GetService<IFileService>();
+                await handler.HandleException(errorApp, context, rootResolver, fileService);
             }));
         }
 

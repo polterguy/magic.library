@@ -3,7 +3,6 @@
  */
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +11,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using magic.node;
+using magic.node.contracts;
 using magic.node.extensions;
 using magic.signals.contracts;
 using magic.lambda.logging.helpers;
@@ -27,7 +27,11 @@ namespace magic.library.internals
         /*
          * Handles the unhandled exception.
          */
-        public async Task HandleException(IApplicationBuilder app, HttpContext context)
+        public async Task HandleException(
+            IApplicationBuilder app,
+            HttpContext context,
+            IRootResolver rootResolver,
+            IFileService fileService)
         {
             // Getting the path of the unhandled exception.
             var ex = context.Features.Get<IExceptionHandlerPathFeature>();
@@ -40,7 +44,7 @@ namespace magic.library.internals
                 context.Response.ContentType = "application/json";
 
                 // Try custom handler first, and if no handler found, resorting to default handler.
-                if (!await TryCustomExceptionHandler(app, ex, context))
+                if (!await TryCustomExceptionHandler(rootResolver, fileService, app, ex, context))
                     await DefaultHandler(app, context, ex);
             }
         }
@@ -52,6 +56,8 @@ namespace magic.library.internals
          * returning true to caller - Otherwise returning false.
          */
         async Task<bool> TryCustomExceptionHandler(
+            IRootResolver rootResolver,
+            IFileService fileService,
             IApplicationBuilder app,
             IExceptionHandlerPathFeature ex,
             HttpContext context)
@@ -70,10 +76,10 @@ namespace magic.library.internals
             while (true)
             {
                 // Checking if we can find en "exceptions.hl" file in currently iterated folder.
-                var filename = (Utilities.RootFolder + string.Join("/", folders)).TrimEnd('/') + "/" + "exceptions.hl";
+                var filename = (rootResolver.RootFolder + string.Join("/", folders)).TrimEnd('/') + "/" + "exceptions.hl";
 
                 // Checking if file exists, and if so, passing on responsibility for handling exception to the file.
-                if (File.Exists(filename))
+                if (fileService.Exists(filename))
                     return await CustomHandler(
                         app,
                         ex,
