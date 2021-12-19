@@ -18,17 +18,14 @@ namespace magic.library.internals
                 .TrimEnd('/') + "/";
         }
 
-        /// </inheritdocs>
         public string RootFolder { get; }
 
-        /// </inheritdocs>
         public string RelativePath(string path)
         {
             // Making sure we remove RootFolder, but keep the initial slash (/).
             return path.Substring(RootFolder.Length - 1);
         }
 
-        /// </inheritdocs>
         public string AbsolutePath(string path)
         {
             // RootFolder should always start with a slash (/).
