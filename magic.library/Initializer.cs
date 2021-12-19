@@ -65,16 +65,23 @@ namespace magic.library
             services.AddMagicScheduler();
             services.AddMagicMail();
             services.AddLambda();
-            services.AddSockets();
+            services.AddSockets(configuration);
         }
 
         /// <summary>
         /// Adds the Magic sockets parts to your service collection.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddSockets(this IServiceCollection services)
+        /// <param name="configuration">Needed to check if sockets are enabled in backend.</param>
+        public static void AddSockets(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
-            services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+            if (configuration["magic:sockets:url"] != null)
+            {
+                services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+                services.AddSignalR();
+            }
         }
 
         /// <summary>
