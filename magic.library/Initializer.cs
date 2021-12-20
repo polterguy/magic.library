@@ -30,8 +30,9 @@ using magic.lambda.mime.services;
 using magic.lambda.http.contracts;
 using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
-using magic.lambda.caching.helpers;
 using magic.lambda.logging.helpers;
+using magic.lambda.caching.services;
+using magic.lambda.caching.contracts;
 using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
 using magic.endpoint.services.utilities;
@@ -90,7 +91,7 @@ namespace magic.library
         /// <param name="services">Your service collection.</param>
         public static void AddCaching(this IServiceCollection services)
         {
-            services.AddSingleton<IMagicMemoryCache, MagicMemoryCache>();
+            services.AddSingleton<IMagicCache, MagicMemoryCache>();
         }
 
         /// <summary>
