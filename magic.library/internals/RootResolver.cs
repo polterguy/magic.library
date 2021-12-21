@@ -13,11 +13,11 @@ namespace magic.library.internals
     {
         public RootResolver(IConfiguration configuration)
         {
-            // By default the root folder for Magic is the location of the "backend.dll" assembly.
+            // By default the root folder for Magic is the current directory.
             RootFolder = Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/') + "/";
 
             /*
-             * By default the root folder for dynamic files in Magic is the location of the backend.dll + "/files/",
+             * By default the root folder for dynamic files in Magic is the current directory + "/files/",
              * but this can be overridden by changing a configuration setting.
              */
             DynamicFiles = (configuration["magic:io:root-folder"] ?? "~/files/").Replace("~/", RootFolder);
@@ -33,13 +33,13 @@ namespace magic.library.internals
             if (!path.StartsWith(DynamicFiles))
                 throw new HyperlambdaException("Tried to create a relative path out of a path that is not absolute");
 
-            // Making sure we remove DynamicFiles, but keep the initial slash (/).
+            // Making sure we remove DynamicFiles, but keeping the initial slash (/).
             return path.Substring(DynamicFiles.Length - 1);
         }
 
         public string AbsolutePath(string path)
         {
-            // DynamicFiles should always start with a slash (/).
+            // DynamicFiles should always end with a slash (/).
             return DynamicFiles + path.Replace("\\", "/").TrimStart('/');
         }
     }
