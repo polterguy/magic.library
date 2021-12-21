@@ -5,6 +5,7 @@
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using magic.node.contracts;
+using magic.node.extensions;
 
 namespace magic.library.internals
 {
@@ -12,35 +13,33 @@ namespace magic.library.internals
     {
         public RootResolver(IConfiguration configuration)
         {
-            RootFolder = (configuration["magic:io:root-folder"] ?? "~/files/")
+            DynamicFiles = (configuration["magic:io:root-folder"] ?? "~/files/")
                 .Replace("~", Directory.GetCurrentDirectory())
                 .Replace("\\", "/")
                 .TrimEnd('/') + "/";
-            AbsoluteRootFolder = Directory.GetCurrentDirectory()
+            RootFolder = Directory.GetCurrentDirectory()
                 .Replace("\\", "/")
                 .TrimEnd('/') + "/";
         }
 
-        public string RootFolder { get; }
+        public string DynamicFiles { get; }
 
-        public string AbsoluteRootFolder { get; }
+        public string RootFolder { get; }
 
         public string RelativePath(string path)
         {
-            // Making sure we remove RootFolder, but keep the initial slash (/).
-            return path.Substring(RootFolder.Length - 1);
+            // Sanity checking invocation.
+            if (!path.StartsWith(DynamicFiles))
+                throw new HyperlambdaException("Tried to create a relative path out of a path that is not absolute");
+
+            // Making sure we remove DynamicFiles, but keep the initial slash (/).
+            return path.Substring(DynamicFiles.Length - 1);
         }
 
         public string AbsolutePath(string path)
         {
-            // RootFolder should always start with a slash (/).
-            return RootFolder + path.Replace("\\", "/").TrimStart('/');
-        }
-
-        public string RootPath(string path)
-        {
-            // RootFolder should always start with a slash (/).
-            return AbsoluteRootFolder + path.Replace("\\", "/").TrimStart('/');
+            // DynamicFiles should always start with a slash (/).
+            return DynamicFiles + path.Replace("\\", "/").TrimStart('/');
         }
     }
 }
