@@ -39,6 +39,7 @@ using magic.lambda.caching.contracts;
 using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
 using magic.endpoint.services.utilities;
+using sig_serv = magic.signals.services;
 
 namespace magic.library
 {
@@ -56,18 +57,12 @@ namespace magic.library
         public static void AddMagic(this IServiceCollection services, IConfiguration configuration)
         {
             // Adding global configuration to services collection.
-            services.AddSingleton<IConfiguration>(p => configuration);
+            services.AddSingleton<IConfiguration>(svc => configuration);
 
             // Making sure we add all controllers in AppDomain and use Newtonsoft JSON as JSON library.
             services.AddControllers().AddNewtonsoftJson();
 
-            /*
-             * Checking if we should add IIS authentication scheme, which we
-             * only do if configuration has declared an "auto login slot".
-             */
-            if (!string.IsNullOrEmpty(configuration["magic:auth:auto-auth"]))
-                services.AddAuthentication(IISDefaults.AuthenticationScheme);
-
+            // Wiring up Magic specific services.
             services.AddMagicFileServices();
             services.AddMagicConfiguration();
             services.AddMagicCaching();
@@ -83,83 +78,7 @@ namespace magic.library
             services.AddMagicSockets(configuration);
         }
 
-        /// <summary>
-        /// Adds the Magic sockets parts to your service collection.
-        /// </summary>
-        /// <param name="services">Your service collection.</param>
-        /// <param name="configuration">Needed to check if sockets are enabled in backend.</param>
-        public static void AddMagicSockets(
-            this IServiceCollection services,
-            IConfiguration configuration)
-        {
-            if (configuration["magic:sockets:url"] != null)
-            {
-                services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
-                services.AddSignalR();
-            }
-        }
-
-        /// <summary>
-        /// Adds Magic configuration.
-        /// </summary>
-        /// <param name="services">Your service collection.</param>
-        public static void AddMagicConfiguration(this IServiceCollection services)
-        {
-            services.AddTransient<IMagicConfiguration, MagicConfiguration>();
-        }
-
-        /// <summary>
-        /// Adds the Magic caching parts to your service collection.
-        /// </summary>
-        /// <param name="services">Your service collection.</param>
-        public static void AddMagicCaching(this IServiceCollection services)
-        {
-            services.AddSingleton<IMagicCache, MagicMemoryCache>();
-        }
-
-        /// <summary>
-        /// Adds the Magic Lambda library parts to your service collection.
-        /// </summary>
-        /// <param name="services">Your service collection.</param>
-        public static void AddMagicLambda(this IServiceCollection services)
-        {
-            services.AddSingleton(typeof(ThreadRunner));
-        }
-
-        /// <summary>
-        /// Adds the Magic Scheduler to your application
-        /// </summary>
-        /// <param name="services">Your service collection.</param>
-        public static void AddMagicScheduler(this IServiceCollection services)
-        {
-            services.AddSingleton(
-                typeof(IScheduler),
-                svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>())));
-        }
-
-        /// <summary>
-        /// Tying up audit logging for Magic.
-        /// </summary>
-        /// <param name="services">Your service collection.</param>
-        public static void AddMagicLogging(this IServiceCollection services)
-        {
-            /*
-             * Associating magic.lambda.logging's ILogger service contract with
-             * our internal "Logger" class, which is the class actually logging
-             * entries, when for instance the [log.info] slot is invoked.
-             */
-            services.AddTransient<ILogger, Logger>();
-        }
-
-        /// <summary>
-        /// Making sure Magic is able to invoke HTTP REST endpoints.
-        /// </summary>
-        /// <param name="services">Your service collection.</param>
-        public static void AddMagicHttp(this IServiceCollection services)
-        {
-            services.AddHttpClient();
-            services.AddTransient<IMagicHttp, MagicHttp>();
-        }
+        #region [ -- Helper methods to wire up IoC container -- ]
 
         /// <summary>
         /// Wires up magic.lambda.io to use the default file, folder and stream service.
@@ -182,6 +101,95 @@ namespace magic.library
         }
 
         /// <summary>
+        /// Adds Magic configuration.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddMagicConfiguration(this IServiceCollection services)
+        {
+            services.AddTransient<IMagicConfiguration, MagicConfiguration>();
+        }
+
+        /// <summary>
+        /// Adds the Magic caching parts to your service collection.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddMagicCaching(this IServiceCollection services)
+        {
+            services.AddSingleton<IMagicCache, MagicMemoryCache>();
+        }
+
+        /// <summary>
+        /// Making sure Magic is able to invoke HTTP REST endpoints.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddMagicHttp(this IServiceCollection services)
+        {
+            services.AddHttpClient();
+            services.AddTransient<IMagicHttp, MagicHttp>();
+        }
+
+        /// <summary>
+        /// Tying up audit logging for Magic.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddMagicLogging(this IServiceCollection services)
+        {
+            /*
+             * Associating magic.lambda.logging's ILogger service contract with
+             * our internal "Logger" class, which is the class actually logging
+             * entries, when for instance the [log.info] slot is invoked.
+             */
+            services.AddTransient<ILogger, Logger>();
+        }
+
+        /// <summary>
+        /// Configures magic.signals such that you can signal slots.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddMagicSignals(this IServiceCollection services)
+        {
+            /*
+             * Loading all assemblies that are not loaded up for some reasons.
+             */
+            var loadedPaths = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Select(x => x.Location);
+
+            var assemblyPaths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
+            foreach (var idx in assemblyPaths.Where(x => !loadedPaths.Contains(x, StringComparer.InvariantCultureIgnoreCase)))
+            {
+                AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(idx));
+            }
+
+            /*
+             * Using the default ISignalsProvider and the default ISignals
+             * implementation.
+             */
+            services.AddTransient<ISignaler, sig_serv.Signaler>();
+            services.AddSingleton<ISignalsProvider>(new SignalsProvider(Slots(services)));
+        }
+
+        /// <summary>
+        /// Donfigures Magic exceptions allowing you to handle exceptions with your own "exceptions.hl" files.
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        public static void AddMagicExceptions(this IServiceCollection services)
+        {
+            services.AddTransient<IExceptionHandler, ExceptionHandler>();
+        }
+
+        /// <summary>
+        /// Configures magic.endpoint to use its default service implementation.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddMagicEndpoints(this IServiceCollection services)
+        {
+            // Configuring the default executor to execute dynamic URLs.
+            services.AddTransient<IHttpExecutorAsync, HttpExecutorAsync>();
+            services.AddTransient<IHttpArgumentsHandler, HttpArgumentsHandler>();
+        }
+
+        /// <summary>
         /// Configures magic.lambda.auth and turning on authentication
         /// and authorization.
         /// </summary>
@@ -189,6 +197,13 @@ namespace magic.library
         /// <param name="configuration">The configuration for your app.</param>
         public static void AddMagicAuthorization(this IServiceCollection services, IConfiguration configuration)
         {
+            /*
+             * Checking if we should add IIS authentication scheme, which we
+             * only do if configuration has declared an "auto login slot".
+             */
+            if (!string.IsNullOrEmpty(configuration["magic:auth:auto-auth"]))
+                services.AddAuthentication(IISDefaults.AuthenticationScheme);
+
             /*
              * Configures magic.lambda.auth to use its default implementation of
              * HttpTicketFactory as its authentication and authorization
@@ -265,14 +280,12 @@ namespace magic.library
         }
 
         /// <summary>
-        /// Configures magic.endpoint to use its default service implementation.
+        /// Adds the Magic Scheduler to your application
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicEndpoints(this IServiceCollection services)
+        public static void AddMagicScheduler(this IServiceCollection services)
         {
-            // Configuring the default executor to execute dynamic URLs.
-            services.AddTransient<IHttpExecutorAsync, HttpExecutorAsync>();
-            services.AddTransient<IHttpArgumentsHandler, HttpArgumentsHandler>();
+            services.AddSingleton<IScheduler>(svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>())));
         }
 
         /// <summary>
@@ -286,40 +299,33 @@ namespace magic.library
         }
 
         /// <summary>
-        /// Configures magic.signals such that you can signal slots.
+        /// Adds the Magic Lambda library parts to your service collection.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicSignals(this IServiceCollection services)
+        public static void AddMagicLambda(this IServiceCollection services)
         {
-            /*
-             * Loading all assemblies that are not loaded up for some reasons.
-             */
-            var loadedPaths = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .Select(x => x.Location);
-
-            var assemblyPaths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
-            foreach (var idx in assemblyPaths.Where(x => !loadedPaths.Contains(x, StringComparer.InvariantCultureIgnoreCase)))
-            {
-                AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(idx));
-            }
-
-            /*
-             * Using the default ISignalsProvider and the default ISignals
-             * implementation.
-             */
-            services.AddTransient<ISignaler, magic.signals.services.Signaler>();
-            services.AddSingleton<ISignalsProvider>(new SignalsProvider(Slots(services)));
+            services.AddSingleton<ThreadRunner>();
         }
 
         /// <summary>
-        /// Donfigures Magic exceptions allowing you to handle exceptions with your own "exceptions.hl" files.
+        /// Adds the Magic sockets parts to your service collection.
         /// </summary>
-        /// <param name="services">Service collection</param>
-        public static void AddMagicExceptions(this IServiceCollection services)
+        /// <param name="services">Your service collection.</param>
+        /// <param name="configuration">Needed to check if sockets are enabled in backend.</param>
+        public static void AddMagicSockets(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
-            services.AddTransient<IExceptionHandler, ExceptionHandler>();
+            if (configuration["magic:sockets:url"] != null)
+            {
+                services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+                services.AddSignalR();
+            }
         }
+
+        #endregion
+
+        #region [ -- Helper methods to correctly wire up application builder -- ]
 
         /// <summary>
         /// Convenience method to make sure you use all Magic features.
@@ -330,16 +336,9 @@ namespace magic.library
         {
             app.UseMagicExceptions();
             app.UseMagicStartupFiles(configuration);
-            app.UseScheduler(configuration);
+            app.UseMagicScheduler(configuration);
             app.UseHttpsRedirection();
-
-            // Applying CORS.
-            var origins = configuration["magic:frontend:urls"];
-            if (!string.IsNullOrEmpty(origins))
-                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(origins.Split(',')));
-            else
-                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-
+            app.UseMagicCors(app, configuration);
             app.UseAuthentication();
             app.UseRouting().UseEndpoints(conf =>
             {
@@ -356,25 +355,8 @@ namespace magic.library
             // Creating a log entry for having started application, but only if system has beeen setup.
             if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
             {
-                var logger = app.ApplicationServices.GetService(typeof(ILogger)) as ILogger;
+                var logger = app.ApplicationServices.GetService<ILogger>();
                 logger.Info("Magic was successfully started");
-            }
-        }
-
-        /// <summary>
-        /// Convenience method to make sure we start scheduler if we're supposed to.
-        /// </summary>
-        /// <param name="app">The application builder of your app.</param>
-        /// <param name="configuration">The configuration for your app.</param>
-        public static void UseScheduler(
-            this IApplicationBuilder app,
-            IConfiguration configuration)
-        {
-            // Starting scheduler, but only if system has been setup.
-            if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
-            {
-                var scheduler = app.ApplicationServices.GetService(typeof(IScheduler)) as IScheduler;
-                scheduler.StartScheduler();
             }
         }
 
@@ -496,6 +478,41 @@ namespace magic.library
                 }
             }
         }
+
+        /// <summary>
+        /// Convenience method to make sure we start scheduler if we're supposed to.
+        /// </summary>
+        /// <param name="app">The application builder of your app.</param>
+        /// <param name="configuration">The configuration for your app.</param>
+        public static void UseMagicScheduler(
+            this IApplicationBuilder app,
+            IConfiguration configuration)
+        {
+            // Starting scheduler, but only if system has been setup.
+            if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
+            {
+                var scheduler = app.ApplicationServices.GetService<IScheduler>();
+                scheduler.StartScheduler();
+            }
+        }
+
+        /// <summary>
+        /// Convenience method to make sure we correctly apply CORS policy.
+        /// </summary>
+        /// <param name="app">The application builder of your app.</param>
+        /// <param name="configuration">The configuration for your app.</param>
+        public static void UseMagicCors(
+            this IApplicationBuilder app,
+            IConfiguration configuration)
+        {
+            var origins = configuration["magic:frontend:urls"];
+            if (!string.IsNullOrEmpty(origins))
+                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(origins.Split(',')));
+            else
+                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+        }
+
+        #endregion
 
         #region [ -- Private helper methods -- ]
 
