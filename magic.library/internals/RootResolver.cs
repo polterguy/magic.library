@@ -13,13 +13,14 @@ namespace magic.library.internals
     {
         public RootResolver(IConfiguration configuration)
         {
-            DynamicFiles = (configuration["magic:io:root-folder"] ?? "~/files/")
-                .Replace("~", Directory.GetCurrentDirectory())
-                .Replace("\\", "/")
-                .TrimEnd('/') + "/";
-            RootFolder = Directory.GetCurrentDirectory()
-                .Replace("\\", "/")
-                .TrimEnd('/') + "/";
+            // By default the root folder for Magic is the location of the "backend.dll" assembly.
+            RootFolder = Directory.GetCurrentDirectory().Replace("\\", "/").TrimEnd('/') + "/";
+
+            /*
+             * By default the root folder for dynamic files in Magic is the location of the backend.dll + "/files/",
+             * but this can be overridden by changing a configuration setting.
+             */
+            DynamicFiles = (configuration["magic:io:root-folder"] ?? "~/files/").Replace("~/", RootFolder);
         }
 
         public string DynamicFiles { get; }

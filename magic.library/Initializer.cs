@@ -164,8 +164,7 @@ namespace magic.library
 
             /*
              * Associating the root folder resolver with our own internal class,
-             * that resolves the root folder for magic.lambda.io to be the config
-             * setting "magic:io:root-folder", or if not given "~/files".
+             * that resolves the root folder for IO operations.
              */
             services.AddTransient<IRootResolver, RootResolver>();
         }
