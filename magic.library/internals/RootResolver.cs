@@ -16,9 +16,14 @@ namespace magic.library.internals
                 .Replace("~", Directory.GetCurrentDirectory())
                 .Replace("\\", "/")
                 .TrimEnd('/') + "/";
+            AbsoluteRootFolder = Directory.GetCurrentDirectory()
+                .Replace("\\", "/")
+                .TrimEnd('/') + "/";
         }
 
         public string RootFolder { get; }
+
+        public string AbsoluteRootFolder { get; }
 
         public string RelativePath(string path)
         {
@@ -31,5 +36,11 @@ namespace magic.library.internals
             // RootFolder should always start with a slash (/).
             return RootFolder + path.Replace("\\", "/").TrimStart('/');
         }
-   }
+
+        public string RootPath(string path)
+        {
+            // RootFolder should always start with a slash (/).
+            return AbsoluteRootFolder + path.Replace("\\", "/").TrimStart('/');
+        }
+    }
 }

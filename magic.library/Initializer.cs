@@ -31,6 +31,7 @@ using magic.lambda.http.contracts;
 using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
 using magic.lambda.logging.helpers;
+using magic.lambda.config.services;
 using magic.lambda.caching.services;
 using magic.lambda.caching.contracts;
 using magic.lambda.scheduler.utilities;
@@ -55,13 +56,14 @@ namespace magic.library
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            services.AddMagicFileServices();
+            services.AddMagicConfiguration();
             services.AddCaching();
             services.AddMagicHttp();
             services.AddMagicLogging();
             services.AddMagicSignals();
             services.AddMagicExceptions();
-            services.AddMagicEndpoints(configuration);
-            services.AddMagicFileServices();
+            services.AddMagicEndpoints();
             services.AddMagicAuthorization(configuration);
             services.AddMagicScheduler();
             services.AddMagicMail();
@@ -83,6 +85,15 @@ namespace magic.library
                 services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
                 services.AddSignalR();
             }
+        }
+
+        /// <summary>
+        /// Adds Magic configuration.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        public static void AddMagicConfiguration(this IServiceCollection services)
+        {
+            services.AddTransient<IMagicConfiguration, MagicConfiguration>();
         }
 
         /// <summary>
@@ -246,8 +257,7 @@ namespace magic.library
         /// Configures magic.endpoint to use its default service implementation.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        /// <param name="configuration">Your apps configuration.</param>
-        public static void AddMagicEndpoints(this IServiceCollection services, IConfiguration configuration)
+        public static void AddMagicEndpoints(this IServiceCollection services)
         {
             // Configuring the default executor to execute dynamic URLs.
             services.AddTransient<IHttpExecutorAsync, HttpExecutorAsync>();
