@@ -53,11 +53,10 @@ namespace magic.library
         /// default settings.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        /// <param name="configuration">The configuration for your app.</param>
-        public static void AddMagic(
-            this IServiceCollection services,
-            IConfiguration configuration)
+        public static void AddMagic(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddControllers().AddNewtonsoftJson();
+
             /*
              * Checking if we should add IIS authentication scheme, which we
              * only do if configuration has declared an "auto login slot".
@@ -67,7 +66,7 @@ namespace magic.library
 
             services.AddMagicFileServices();
             services.AddMagicConfiguration();
-            services.AddCaching();
+            services.AddMagicCaching();
             services.AddMagicHttp();
             services.AddMagicLogging();
             services.AddMagicSignals();
@@ -76,8 +75,8 @@ namespace magic.library
             services.AddMagicAuthorization(configuration);
             services.AddMagicScheduler();
             services.AddMagicMail();
-            services.AddLambda();
-            services.AddSockets(configuration);
+            services.AddMagicLambda();
+            services.AddMagicSockets(configuration);
         }
 
         /// <summary>
@@ -85,7 +84,7 @@ namespace magic.library
         /// </summary>
         /// <param name="services">Your service collection.</param>
         /// <param name="configuration">Needed to check if sockets are enabled in backend.</param>
-        public static void AddSockets(
+        public static void AddMagicSockets(
             this IServiceCollection services,
             IConfiguration configuration)
         {
@@ -109,7 +108,7 @@ namespace magic.library
         /// Adds the Magic caching parts to your service collection.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddCaching(this IServiceCollection services)
+        public static void AddMagicCaching(this IServiceCollection services)
         {
             services.AddSingleton<IMagicCache, MagicMemoryCache>();
         }
@@ -118,7 +117,7 @@ namespace magic.library
         /// Adds the Magic Lambda library parts to your service collection.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddLambda(this IServiceCollection services)
+        public static void AddMagicLambda(this IServiceCollection services)
         {
             services.AddSingleton(typeof(ThreadRunner));
         }
@@ -323,9 +322,7 @@ namespace magic.library
         /// </summary>
         /// <param name="app">The application builder of your app.</param>
         /// <param name="configuration">The configuration for your app.</param>
-        public static void UseMagic(
-            this IApplicationBuilder app,
-            IConfiguration configuration)
+        public static void UseMagic(this IApplicationBuilder app, IConfiguration configuration)
         {
             app.UseMagicExceptions();
             app.UseMagicStartupFiles(configuration);
