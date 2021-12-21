@@ -14,9 +14,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using magic.node.services;
 using magic.node.contracts;
+using magic.lambda.sockets;
 using magic.node.extensions;
 using magic.lambda.threading;
 using magic.signals.services;
@@ -56,6 +58,13 @@ namespace magic.library
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            /*
+             * Checking if we should add IIS authentication scheme, which we
+             * only do if configuration has declared an "auto login slot".
+             */
+            if (!string.IsNullOrEmpty(configuration["magic:auth:auto-auth"]))
+                services.AddAuthentication(IISDefaults.AuthenticationScheme);
+
             services.AddMagicFileServices();
             services.AddMagicConfiguration();
             services.AddCaching();
@@ -296,7 +305,7 @@ namespace magic.library
              * Using the default ISignalsProvider and the default ISignals
              * implementation.
              */
-            services.AddTransient<ISignaler, Signaler>();
+            services.AddTransient<ISignaler, magic.signals.services.Signaler>();
             services.AddSingleton<ISignalsProvider>(new SignalsProvider(Slots(services)));
         }
 
@@ -321,6 +330,34 @@ namespace magic.library
             app.UseMagicExceptions();
             app.UseMagicStartupFiles(configuration);
             app.UseScheduler(configuration);
+            app.UseHttpsRedirection();
+
+            // Applying CORS.
+            var origins = configuration["magic:frontend:urls"];
+            if (!string.IsNullOrEmpty(origins))
+                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(origins.Split(',')));
+            else
+                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
+            app.UseAuthentication();
+            app.UseRouting().UseEndpoints(conf =>
+            {
+                conf.MapControllers();
+
+                /*
+                 * Checking if SignalR is enabled, and if so, making sure we
+                 * resolve the "/sockets" endpoint as SignalR invocations.
+                 */
+                if (configuration["magic:sockets:url"] != null)
+                    conf.MapHub<MagicHub>("/sockets");
+            });
+
+            // Creating a log entry for having started application, but only if system has beeen setup.
+            if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
+            {
+                var logger = app.ApplicationServices.GetService(typeof(ILogger)) as ILogger;
+                logger.Info("Magic was successfully started");
+            }
         }
 
         /// <summary>
