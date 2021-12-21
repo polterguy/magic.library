@@ -338,7 +338,7 @@ namespace magic.library
             app.UseMagicStartupFiles(configuration);
             app.UseMagicScheduler(configuration);
             app.UseHttpsRedirection();
-            app.UseMagicCors(app, configuration);
+            app.UseMagicCors(configuration);
             app.UseAuthentication();
             app.UseRouting().UseEndpoints(conf =>
             {
