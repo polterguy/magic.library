@@ -55,6 +55,10 @@ namespace magic.library
         /// <param name="services">Your service collection.</param>
         public static void AddMagic(this IServiceCollection services, IConfiguration configuration)
         {
+            // Adding global configuration to services collection.
+            services.AddSingleton<IConfiguration>(p => configuration);
+
+            // Making sure we add all controllers in AppDomain and use Newtonsoft JSON as JSON library.
             services.AddControllers().AddNewtonsoftJson();
 
             /*
