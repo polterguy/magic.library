@@ -54,6 +54,7 @@ namespace magic.library
         /// default settings.
         /// </summary>
         /// <param name="services">Your service collection.</param>
+        /// <param name="configuration">Configuration object.</param>
         public static void AddMagic(this IServiceCollection services, IConfiguration configuration)
         {
             // Adding global configuration to services collection.
