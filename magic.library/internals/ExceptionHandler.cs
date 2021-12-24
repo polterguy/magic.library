@@ -146,7 +146,7 @@ namespace magic.library.internals
          * Responsible for rendering custom exception handler's result to HTTP response,
          * and decorating HTTP response according to exception handler's return value(s).
          */
-        async Task RenderCustomExceptionResponse(
+        static async Task RenderCustomExceptionResponse(
             HttpContext context,
             ISignaler signaler,
             Node nodeResult)
@@ -230,7 +230,7 @@ namespace magic.library.internals
          * Helper method to create a JSON result from an exception, and returning
          * the result to the caller.
          */
-        JObject GetDefaultExceptionResponse(
+        static JObject GetDefaultExceptionResponse(
             IExceptionHandlerPathFeature ex,
             HttpContext context,
             string msg)
