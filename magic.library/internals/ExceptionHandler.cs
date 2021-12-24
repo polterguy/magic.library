@@ -100,7 +100,7 @@ namespace magic.library.internals
         /*
          * Invoked when a custom exception handler Hyperlambda file is found.
          */
-        async Task<bool> CustomHandler(
+        static async Task<bool> CustomHandler(
             IApplicationBuilder app,
             IExceptionHandlerPathFeature ex,
             HttpContext context,
