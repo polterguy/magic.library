@@ -395,7 +395,7 @@ namespace magic.library
             var signaler = app.ApplicationServices.GetService<ISignaler>();
 
             // Retrieving all module folders.
-            var folders = GetModuleFolders(app, configuration);
+            var folders = GetModuleFolders(app);
 
             // Iterating through all module folders to make sure we execute startup files.
             foreach (var idxModule in folders)
@@ -520,7 +520,7 @@ namespace magic.library
         /*
          * Returns all module folders to caller.
          */
-        static IEnumerable<string> GetModuleFolders(IApplicationBuilder app, IConfiguration configuration)
+        static IEnumerable<string> GetModuleFolders(IApplicationBuilder app)
         {
             // Creating our services.
             var folderService = app.ApplicationServices.GetService<IFolderService>();
