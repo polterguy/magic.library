@@ -544,7 +544,6 @@ namespace magic.library
             // Creating our services.
             var fileService = app.ApplicationServices.GetService<IFileService>();
             var folderService = app.ApplicationServices.GetService<IFolderService>();
-            var rootResolver = app.ApplicationServices.GetService<IRootResolver>();
 
             // Startup folder, now executing all Hyperlambda files inside of it.
             foreach (var idxFile in fileService.ListFiles(folder, ".hl"))

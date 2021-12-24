@@ -24,6 +24,8 @@ namespace magic.library.internals
      */
     internal sealed class ExceptionHandler : IExceptionHandler
     {
+        const string DEFAULT_ERROR_MESSAGE = "Guru meditation, come back when Universe is in order!";
+
         /*
          * Handles the unhandled exception.
          */
@@ -162,7 +164,7 @@ namespace magic.library.internals
             signaler.Signal(".lambda2json-raw", nodeResult);
             var response = nodeResult.Get<JObject>();
             if (response["message"] == null)
-                response["message"] = GetDefaultExceptionMessage();
+                response["message"] = DEFAULT_ERROR_MESSAGE;
 
             // Making sure exception response is available for client.
             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
@@ -174,7 +176,7 @@ namespace magic.library.internals
         /*
          * Responsible for decorating invocation to custom exception handler.
          */
-        Node GetArgumentsToCustomHandler(IExceptionHandlerPathFeature ex, string exceptionHandlerFile)
+        static Node GetArgumentsToCustomHandler(IExceptionHandlerPathFeature ex, string exceptionHandlerFile)
         {
             // Creating arguments to exception handler file.
             var args = new Node("", exceptionHandlerFile);
@@ -264,7 +266,7 @@ namespace magic.library.internals
                     // Exception details is not supposed to be publicly visible.
                     return new JObject
                     {
-                        ["message"] = GetDefaultExceptionMessage()
+                        ["message"] = DEFAULT_ERROR_MESSAGE
                     };
                 }
             }
@@ -273,18 +275,9 @@ namespace magic.library.internals
                 // Default exception response, returned if exception is not Hyperlambda exception.
                 return new JObject
                 {
-                    ["message"] = GetDefaultExceptionMessage()
+                    ["message"] = DEFAULT_ERROR_MESSAGE
                 };
             }
-        }
-
-        /*
-         * Default exception response, returned unless exception explicitly
-         * wants to override response content.
-         */
-        string GetDefaultExceptionMessage()
-        {
-            return "Guru meditation, come back when Universe is in order!";
         }
 
         #endregion
