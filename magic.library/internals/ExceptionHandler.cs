@@ -166,10 +166,12 @@ namespace magic.library.internals
             if (response["message"] == null)
                 response["message"] = DEFAULT_ERROR_MESSAGE;
 
-            // Making sure exception response is available for client.
-            #pragma warning disable S5122
-            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            #pragma warning restore S5122
+            /*
+             * Notice, we have no way to determine the frontend used unless we find an explicit configuration part.
+             * Hence, we've got no other options than to simply turn on everything if no frontends are declared
+             * in configuration.
+             */
+            context.Response.Headers.Add("Access-Control-Allow-Origin", "*"); //NOSONAR
 
             // Writing exception to response and returning success.
             await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
@@ -225,9 +227,12 @@ namespace magic.library.internals
             // Making sure we return exception according to specifications to caller as JSON of some sort.
             var response = GetDefaultExceptionResponse(ex, context, ex.Error.Message);
 
-            #pragma warning disable S5122
-            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            #pragma warning restore S5122
+            /*
+             * Notice, we have no way to determine the frontend used unless we find an explicit configuration part.
+             * Hence, we've got no other options than to simply turn on everything if no frontends are declared
+             * in configuration.
+             */
+            context.Response.Headers.Add("Access-Control-Allow-Origin", "*"); //NOSONAR
 
             await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
         }
