@@ -507,10 +507,13 @@ namespace magic.library
             IConfiguration configuration)
         {
             var origins = configuration["magic:frontend:urls"];
+
+            #pragma warning disable S5122
             if (!string.IsNullOrEmpty(origins))
                 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(origins.Split(',')));
             else
                 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+            #pragma warning restore S5122
         }
 
         #endregion

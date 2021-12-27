@@ -167,7 +167,9 @@ namespace magic.library.internals
                 response["message"] = DEFAULT_ERROR_MESSAGE;
 
             // Making sure exception response is available for client.
+            #pragma warning disable S5122
             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            #pragma warning restore S5122
 
             // Writing exception to response and returning success.
             await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
@@ -222,7 +224,11 @@ namespace magic.library.internals
 
             // Making sure we return exception according to specifications to caller as JSON of some sort.
             var response = GetDefaultExceptionResponse(ex, context, ex.Error.Message);
+
+            #pragma warning disable S5122
             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            #pragma warning restore S5122
+
             await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
         }
 
