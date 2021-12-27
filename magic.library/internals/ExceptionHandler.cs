@@ -57,7 +57,7 @@ namespace magic.library.internals
          * Tries to execute custom exception handler, and if we can find a custom handler,
          * returning true to caller - Otherwise returning false.
          */
-        async Task<bool> TryCustomExceptionHandler(
+        static async Task<bool> TryCustomExceptionHandler(
             IRootResolver rootResolver,
             IFileService fileService,
             IApplicationBuilder app,
@@ -78,7 +78,7 @@ namespace magic.library.internals
             while (true)
             {
                 // Checking if we can find en "exceptions.hl" file in currently iterated folder.
-                var filename = rootResolver.AbsolutePath(string.Join("/", folders).TrimEnd('/') + "/" + "exceptions.hl");
+                var filename = rootResolver.AbsolutePath(string.Join("/", folders).TrimEnd('/') + "/exceptions.hl");
 
                 // Checking if file exists, and if so, passing on responsibility for handling exception to the file.
                 if (fileService.Exists(filename))
@@ -86,7 +86,7 @@ namespace magic.library.internals
                         app,
                         ex,
                         context,
-                        string.Join("/", folders) + "/" + "exceptions.hl");
+                        string.Join("/", folders) + "/exceptions.hl");
 
                 // Checking if we have more folders to traverse upwards in hierarchy.
                 if (!folders.Any())
@@ -205,7 +205,7 @@ namespace magic.library.internals
          *
          * This one simply logs the exception as is, and returns the exception response accordingly.
          */
-        async Task DefaultHandler(
+        static async Task DefaultHandler(
             IApplicationBuilder app,
             HttpContext context,
             IExceptionHandlerPathFeature ex)
