@@ -508,12 +508,15 @@ namespace magic.library
         {
             var origins = configuration["magic:frontend:urls"];
 
-            #pragma warning disable S5122
+            /*
+             * Notice, we have no way to determine the frontend used unless we find an explicit configuration part.
+             * Hence, we've got no other options than to simply turn on everything if no frontends are declared
+             * in configuration.
+             */
             if (!string.IsNullOrEmpty(origins))
                 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(origins.Split(',')));
             else
-                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-            #pragma warning restore S5122
+                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()); //NOSONAR
         }
 
         #endregion
