@@ -382,8 +382,12 @@ namespace magic.library
         }
 
         /// <summary>
-        /// Evaluates all Magic Hyperlambda module startup files, that are
-        /// inside Magic's dynamic "modules/xxx/magic.startup/" folder, 
+        /// Executes all Hyperlambda module startup files that are inside Magic's dynamic folder,
+        /// implying all files in all folders that have the name of "magic.startup", and can either
+        /// be found on system level, or inside modules, or inside folders inside modules.
+        /// 
+        /// This allows us to have 3 layers of startup files; System level, module level, and
+        /// sub-module level.
         /// </summary>
         /// <param name="app">Your application builder.</param>
         /// <param name="configuration">Your app's configuration.</param>
@@ -397,83 +401,44 @@ namespace magic.library
             // Retrieving all module folders.
             var folders = GetModuleFolders(app);
 
-            // Iterating through all module folders to make sure we execute startup files.
-            foreach (var idxModule in folders)
+            /*
+             * Recursively executing all system startup folders such as e.g. "/system/magic.startup/",
+             * or "/modules/magic.startup/".
+             */
+            foreach (var idxSystemFolder in folders)
             {
                 /*
-                 * Checking if this is a "startup folder", at which point we
-                 * execute all Hyperlambda files (recursively) inside of it.
+                 * Invoking method responsible for executing startup files for folder,
+                 * but only if this is a "magic.startup" folder.
                  */
-                try
-                {
-                    if (new DirectoryInfo(idxModule).Name == "magic.startup")
-                        ExecuteStartupFiles(app, signaler, idxModule);
-                }
-                catch (Exception err)
-                {
-                    // Verifying system has been configured before attempting to log error.
-                    if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
-                    {
-                        try
-                        {
-                            var logger = app.ApplicationServices.GetService<ILogger>();
-                            logger.Error($"Exception occurred as we tried to initialise module '{idxModule}', message from system was '{err.Message}'", err);
-                        }
-                        catch (Exception error)
-                        {
-                            // Nothing to do here really ...
-                            Console.WriteLine(error.Message);
-                        }
-                    }
-                }
+                if (new DirectoryInfo(idxSystemFolder).Name == "magic.startup")
+                    ExecuteStartupFilesWrapper(app, configuration, idxSystemFolder);
 
-                // Finding all folders inside of the currently iterated folder inside of "/modules/".
-                foreach (var idxModuleFolder in Directory.GetDirectories(idxModule))
+                /*
+                 * Recursively executing all module startup folders such as e.g. "/system/auth/magic.startup/",
+                 * or "/modules/some-module/magic.startup/".
+                 */
+                foreach (var idxModuleFolder in Directory.GetDirectories(idxSystemFolder))
                 {
                     /*
-                     * Notice, in order to have one bogus app take down the entire app,
-                     * we wrap this guy inside a try/catch block.
+                     * Checking if this is a "startup folder", at which point we
+                     * execute all Hyperlambda files (recursively) inside of it.
                      */
-                    try
+                    if (new DirectoryInfo(idxModuleFolder).Name == "magic.startup")
+                    {
+                        ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder);
+                    }
+                    else
                     {
                         /*
-                         * Checking if this is a "startup folder", at which point we
-                         * execute all Hyperlambda files (recursively) inside of it.
+                         * Recursively executing all sub-module startup folders such as e.g.
+                         * "/system/auth/oauth/magic.startup/",
+                         * or "/modules/some-module/sub-module/magic.startup/".
                          */
-                        var folder = new DirectoryInfo(idxModuleFolder);
-                        if (folder.Name == "magic.startup")
+                        foreach (var idxSubModuleFolder in Directory.GetDirectories(idxModuleFolder))
                         {
-                            ExecuteStartupFiles(app, signaler, idxModuleFolder);
-                        }
-                        else
-                        {
-                            /*
-                             * Checking if there's a magic.startup folder inside of
-                             * the currently iterated sub-module folder.
-                             */
-                            foreach (var idxSubModuleFolder in Directory
-                                .GetDirectories(idxModuleFolder)
-                                .Where(x => new DirectoryInfo(x).Name == "magic.startup"))
-                            {
-                                ExecuteStartupFiles(app, signaler, idxSubModuleFolder);
-                            }
-                        }
-                    }
-                    catch (Exception err)
-                    {
-                        // Verifying system has been configured before attempting to log error.
-                        if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
-                        {
-                            try
-                            {
-                                var logger = app.ApplicationServices.GetService<ILogger>();
-                                logger.Error($"Exception occurred as we tried to initialise module '{idxModule}', message from system was '{err.Message}'", err);
-                            }
-                            catch (Exception error)
-                            {
-                                // Nothing to do here really ...
-                                Console.WriteLine(error.Message);
-                            }
+                            if (new DirectoryInfo(idxSubModuleFolder).Name == "magic.startup")
+                                ExecuteStartupFilesWrapper(app, configuration, idxSubModuleFolder);
                         }
                     }
                 }
@@ -542,14 +507,61 @@ namespace magic.library
         }
 
         /*
+         * Method responsible for executing startup files for specified folder.
+         */
+        static void ExecuteStartupFilesWrapper(
+            IApplicationBuilder app,
+            IConfiguration configuration,
+            string startupFolder)
+        {
+            /*
+             * To avoid one module's startup files to prevent another module's startup files from
+             * executing, we wrap execution of a module's startup files inside a try/catch, and
+             * simply logs any errors, while still allowing execution to continue.
+             */
+            try
+            {
+                ExecuteHyperlambdaFilesRecursively(app, startupFolder);
+            }
+            catch (Exception err)
+            {
+                // Verifying system has been configured before attempting to log error.
+                if (configuration["magic:auth:secret"] == "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
+                {
+                    // System has NOT been configured, simply logging to console in an attempt to try to warn user.
+                    Console.WriteLine(err.Message);
+                }
+                else
+                {
+                    /*
+                     * In case system has been configured erronously with for instance a bogus database
+                     * connection string, we wrap our attempt to log the exception inside a try/catch,
+                     * and just silently catch the exception and write it to the console.
+                     */
+                    try
+                    {
+                        var logger = app.ApplicationServices.GetService<ILogger>();
+                        logger.Error($"Exception occurred as we tried to initialize module '{startupFolder}', message from system was '{err.Message}'", err);
+                    }
+                    catch (Exception error)
+                    {
+                        // Nothing to do here really ...
+                        Console.WriteLine(error.Message);
+                    }
+                }
+            }
+        }
+
+        /*
          * Will recursively execute every single Hyperlambda file inside of
          * the specified folder.
          */
-        static void ExecuteStartupFiles(IApplicationBuilder app, ISignaler signaler, string folder)
+        static void ExecuteHyperlambdaFilesRecursively(IApplicationBuilder app, string folder)
         {
             // Creating our services.
             var fileService = app.ApplicationServices.GetService<IFileService>();
             var folderService = app.ApplicationServices.GetService<IFolderService>();
+            var signaler = app.ApplicationServices.GetService<ISignaler>();
 
             // Startup folder, now executing all Hyperlambda files inside of it.
             foreach (var idxFile in fileService.ListFiles(folder, ".hl"))
@@ -561,7 +573,7 @@ namespace magic.library
             // Recursively checking sub folders.
             foreach (var idxFolder in folderService.ListFolders(folder))
             {
-                ExecuteStartupFiles(app, signaler, idxFolder);
+                ExecuteHyperlambdaFilesRecursively(app, idxFolder);
             }
         }
 
