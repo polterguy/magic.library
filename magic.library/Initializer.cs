@@ -395,9 +395,6 @@ namespace magic.library
             this IApplicationBuilder app,
             IConfiguration configuration)
         {
-            // Creating a signaler and figuring out root path for dynamic Hyperlambda files.
-            var signaler = app.ApplicationServices.GetService<ISignaler>();
-
             // Retrieving all module folders.
             var folders = GetModuleFolders(app);
 
