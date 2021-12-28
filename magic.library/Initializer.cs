@@ -286,7 +286,7 @@ namespace magic.library
         /// <param name="services">Your service collection.</param>
         public static void AddMagicScheduler(this IServiceCollection services)
         {
-            services.AddSingleton<IScheduler>(svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>())));
+            services.AddSingleton<IScheduler>(svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>(), svc.GetService<IMagicConfiguration>())));
         }
 
         /// <summary>
