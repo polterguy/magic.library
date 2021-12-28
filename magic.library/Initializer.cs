@@ -395,48 +395,44 @@ namespace magic.library
             this IApplicationBuilder app,
             IConfiguration configuration)
         {
-            // Retrieving all module folders.
-            var folders = GetModuleFolders(app);
-
             /*
-             * Recursively executing all system startup folders such as e.g. "/system/magic.startup/",
-             * or "/modules/magic.startup/".
+             * Iterating through all system folders, such as "/modules/foo/" and "/system/auth/"
              */
-            foreach (var idxSystemFolder in folders)
+            foreach (var idxSystemFolder in GetModuleFolders(app))
             {
                 /*
-                 * Invoking method responsible for executing startup files for folder,
-                 * but only if this is a "magic.startup" folder.
+                 * Checking if this folder is a "magic.startup" folder, implying e.g. "/system/magic.startup/"
+                 * or "/modules/magic.startup/"
                  */
                 if (new DirectoryInfo(idxSystemFolder).Name == "magic.startup")
+                {
                     ExecuteStartupFilesWrapper(app, configuration, idxSystemFolder);
-
-                /*
-                 * Recursively executing all module startup folders such as e.g. "/system/auth/magic.startup/",
-                 * or "/modules/some-module/magic.startup/".
-                 */
-                foreach (var idxModuleFolder in Directory.GetDirectories(idxSystemFolder))
+                }
+                else
                 {
                     /*
-                     * Checking if this is a "startup folder", at which point we
-                     * execute all Hyperlambda files (recursively) inside of it.
+                     * Iterating through all folders that are module startup folders, implying e.g.
+                     * "/system/auth/magic.startup/" or "/modules/some-module/magic.startup/".
                      */
-                    if (new DirectoryInfo(idxModuleFolder).Name == "magic.startup")
+                    foreach (var idxModuleFolder in Directory
+                        .GetDirectories(idxSystemFolder)
+                        .Where(x => new DirectoryInfo(x).Name == "magic.startup"))
                     {
                         ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder);
                     }
-                    else
+
+                    /*
+                     * Iterating through all sub folders of folders that are NOT "magic.startup" folders,
+                     * to see if there are sub-modules containing startup folders, such as e.g.
+                     * "/modules/some-module/some-sub-module/magic.startup/".
+                     */
+                    foreach (var idxModuleFolder in Directory
+                        .GetDirectories(idxSystemFolder)
+                        .Where(x => new DirectoryInfo(x).Name != "magic.startup")
+                        .SelectMany(x => new DirectoryInfo(x).GetDirectories())
+                        .Where(x => x.Name == "magic.startup"))
                     {
-                        /*
-                         * Recursively executing all sub-module startup folders such as e.g.
-                         * "/system/auth/oauth/magic.startup/",
-                         * or "/modules/some-module/sub-module/magic.startup/".
-                         */
-                        foreach (var idxSubModuleFolder in Directory.GetDirectories(idxModuleFolder))
-                        {
-                            if (new DirectoryInfo(idxSubModuleFolder).Name == "magic.startup")
-                                ExecuteStartupFilesWrapper(app, configuration, idxSubModuleFolder);
-                        }
+                        ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder.Name);
                     }
                 }
             }
