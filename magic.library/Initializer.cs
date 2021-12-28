@@ -429,10 +429,10 @@ namespace magic.library
                     foreach (var idxModuleFolder in Directory
                         .GetDirectories(idxSystemFolder)
                         .Where(x => new DirectoryInfo(x).Name != "magic.startup")
-                        .SelectMany(x => new DirectoryInfo(x).GetDirectories())
-                        .Where(x => x.Name == "magic.startup"))
+                        .SelectMany(x => Directory.GetDirectories(x))
+                        .Where(x => x == "magic.startup"))
                     {
-                        ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder.Name);
+                        ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder);
                     }
                 }
             }
