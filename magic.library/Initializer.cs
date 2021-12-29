@@ -36,6 +36,8 @@ using magic.lambda.logging.helpers;
 using magic.lambda.config.services;
 using magic.lambda.caching.services;
 using magic.lambda.caching.contracts;
+using magic.lambda.scheduler.services;
+using magic.lambda.scheduler.contracts;
 using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
 using magic.endpoint.services.utilities;
@@ -286,7 +288,8 @@ namespace magic.library
         /// <param name="services">Your service collection.</param>
         public static void AddMagicScheduler(this IServiceCollection services)
         {
-            services.AddSingleton<IScheduler>(svc => new Scheduler(svc, new Logger(svc.GetService<ISignaler>(), svc.GetService<IMagicConfiguration>())));
+            services.AddSingleton<ITaskScheduler, Scheduler>();
+            services.AddSingleton<ITaskStorage, Scheduler>();
         }
 
         /// <summary>
@@ -337,7 +340,6 @@ namespace magic.library
         {
             app.UseMagicExceptions();
             app.UseMagicStartupFiles(configuration);
-            app.UseMagicScheduler(configuration);
             app.UseHttpsRedirection();
             app.UseMagicCors(configuration);
             app.UseAuthentication();
@@ -435,23 +437,6 @@ namespace magic.library
                         ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder);
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Convenience method to make sure we start scheduler if we're supposed to.
-        /// </summary>
-        /// <param name="app">The application builder of your app.</param>
-        /// <param name="configuration">The configuration for your app.</param>
-        public static void UseMagicScheduler(
-            this IApplicationBuilder app,
-            IConfiguration configuration)
-        {
-            // Starting scheduler, but only if system has been setup.
-            if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
-            {
-                var scheduler = app.ApplicationServices.GetService<IScheduler>();
-                scheduler.StartScheduler();
             }
         }
 
