@@ -365,6 +365,9 @@ namespace magic.library
                 var logger = app.ApplicationServices.GetService<ILogger>();
                 logger.Info("Magic was successfully started");
             }
+
+            // Writing something to the console to give feedback to user.
+            Console.WriteLine("Magic was successfully started");
         }
 
         /// <summary>
