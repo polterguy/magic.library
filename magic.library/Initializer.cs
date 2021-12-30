@@ -291,6 +291,7 @@ namespace magic.library
             services.AddSingleton<ITaskScheduler, Scheduler>();
             services.AddSingleton<ITaskStorage, Scheduler>();
             services.AddTransient<IServiceCreator<ISignaler>>((svc) => new ServiceCreator<ISignaler>(svc));
+            services.AddTransient<IServiceCreator<ILogger>>((svc) => new ServiceCreator<ILogger>(svc));
             services.AddTransient<IServiceCreator<IMagicConfiguration>>((svc) => new ServiceCreator<IMagicConfiguration>(svc));
         }
 
