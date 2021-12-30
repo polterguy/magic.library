@@ -342,6 +342,7 @@ namespace magic.library
         {
             app.UseMagicExceptions();
             app.UseMagicStartupFiles(configuration);
+            app.UseMagicScheduler();
             app.UseHttpsRedirection();
             app.UseMagicCors(configuration);
             app.UseAuthentication();
@@ -440,6 +441,16 @@ namespace magic.library
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Starts the scheduler for all schedules for all tasks in Magic.
+        /// </summary>
+        /// <param name="app">Your application builder.</param>
+        public static void UseMagicScheduler(this IApplicationBuilder app)
+        {
+            var scheduler = app.ApplicationServices.GetService<ITaskScheduler>();
+            scheduler.Start();
         }
 
         /// <summary>
