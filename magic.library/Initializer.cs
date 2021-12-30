@@ -342,7 +342,7 @@ namespace magic.library
         {
             app.UseMagicExceptions();
             app.UseMagicStartupFiles(configuration);
-            app.UseMagicScheduler();
+            app.UseMagicScheduler(configuration);
             app.UseHttpsRedirection();
             app.UseMagicCors(configuration);
             app.UseAuthentication();
@@ -447,10 +447,15 @@ namespace magic.library
         /// Starts the scheduler for all schedules for all tasks in Magic.
         /// </summary>
         /// <param name="app">Your application builder.</param>
-        public static void UseMagicScheduler(this IApplicationBuilder app)
+        /// <param name="configuration">Your app's configuration object.</param>
+        public static void UseMagicScheduler(
+            this IApplicationBuilder app,
+            IConfiguration configuration)
         {
-            var scheduler = app.ApplicationServices.GetService<ITaskScheduler>();
-            scheduler.Start();
+            if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
+            {
+                app.ApplicationServices.GetService<ITaskScheduler>().Start();
+            }
         }
 
         /// <summary>
