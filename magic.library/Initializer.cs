@@ -455,7 +455,17 @@ namespace magic.library
         {
             if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
             {
-                app.ApplicationServices.GetService<ITaskScheduler>().StartAsync().GetAwaiter().GetResult();
+                /*
+                 * Starting task scheduler, passing in max concurrent jobs, defaulting to 8 if no
+                 * configuration value is found.
+                 */
+                var maxThreads = int.Parse(configuration["magic:scheduler:max-threads"] ?? "8");
+                app.ApplicationServices.GetService<ITaskScheduler>()
+                    .StartAsync(maxThreads)
+                    .GetAwaiter()
+                    .GetResult();
+                var logger = app.ApplicationServices.GetService<ILogger>();
+                logger.Info($"Starting task scheduler with {maxThreads} as maximum concurrent threads allowed to execute simultaneously for scheduled tasks");
             }
         }
 
