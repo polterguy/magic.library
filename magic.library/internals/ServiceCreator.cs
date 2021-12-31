@@ -3,7 +3,7 @@
  */
 
 using System;
-using magic.lambda.scheduler.contracts;
+using magic.node.contracts;
 
 namespace magic.library.internals
 {
