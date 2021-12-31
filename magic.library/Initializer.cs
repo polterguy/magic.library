@@ -455,7 +455,7 @@ namespace magic.library
         {
             if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
             {
-                app.ApplicationServices.GetService<ITaskScheduler>().Start();
+                app.ApplicationServices.GetService<ITaskScheduler>().StartAsync().GetAwaiter().GetResult();
             }
         }
 
