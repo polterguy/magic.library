@@ -62,7 +62,7 @@
     <PackageReference Include="magic.lambda.odbc" Version="10.0.15" />
     <PackageReference Include="magic.lambda.pgsql" Version="10.0.15" />
     <PackageReference Include="magic.lambda.mssql" Version="10.0.15" />
-    <PackageReference Include="magic.lambda.scheduler" Version="10.0.15" />
+    <PackageReference Include="magic.lambda.scheduler" Version="10.0.16" />
     <PackageReference Include="magic.lambda.slots" Version="10.0.15" />
     <PackageReference Include="magic.lambda.strings" Version="10.0.15" />
     <PackageReference Include="magic.lambda.dates" Version="10.0.15" />
