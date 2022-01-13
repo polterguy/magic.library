@@ -73,6 +73,7 @@
     <PackageReference Include="magic.endpoint.services" Version="10.0.15" />
     <PackageReference Include="magic.lambda.sockets" Version="10.0.15" />
     <PackageReference Include="magic.lambda.system" Version="10.0.15" />
+    <PackageReference Include="magic.lambda.threading" Version="10.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
