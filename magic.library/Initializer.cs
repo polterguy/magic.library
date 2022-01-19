@@ -16,7 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using magic.io.scylla;
 using magic.node.services;
 using magic.node.contracts;
 using magic.lambda.sockets;
