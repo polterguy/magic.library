@@ -442,10 +442,10 @@ namespace magic.library
                      * to see if there are sub-modules containing startup folders, such as e.g.
                      * "/modules/some-module/some-sub-module/magic.startup/".
                      */
-                    foreach (var idxModuleFolder in Directory
-                        .GetDirectories(idxSystemFolder)
+                    foreach (var idxModuleFolder in folderService
+                        .ListFolders(idxSystemFolder)
                         .Where(x => new DirectoryInfo(x).Name != "magic.startup")
-                        .SelectMany(x => Directory.GetDirectories(x))
+                        .SelectMany(x => folderService.ListFolders(x))
                         .Where(x => x == "magic.startup"))
                     {
                         ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder);
