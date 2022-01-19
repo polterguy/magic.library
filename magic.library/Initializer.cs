@@ -413,6 +413,7 @@ namespace magic.library
             /*
              * Iterating through all system folders, such as "/modules/foo/" and "/system/auth/"
              */
+            var folderService = app.ApplicationServices.GetService<IFolderService>();
             foreach (var idxSystemFolder in GetModuleFolders(app))
             {
                 /*
@@ -429,8 +430,8 @@ namespace magic.library
                      * Iterating through all folders that are module startup folders, implying e.g.
                      * "/system/auth/magic.startup/" or "/modules/some-module/magic.startup/".
                      */
-                    foreach (var idxModuleFolder in Directory
-                        .GetDirectories(idxSystemFolder)
+                    foreach (var idxModuleFolder in folderService
+                        .ListFolders(idxSystemFolder)
                         .Where(x => new DirectoryInfo(x).Name == "magic.startup"))
                     {
                         ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder);
