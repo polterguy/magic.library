@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using magic.io.scylla;
 using magic.node.services;
 using magic.node.contracts;
 using magic.lambda.sockets;
@@ -66,12 +67,12 @@ namespace magic.library
             services.AddControllers().AddNewtonsoftJson();
 
             // Wiring up Magic specific services.
-            services.AddMagicFileServices();
+            services.AddMagicSignals();
+            services.AddMagicFileServices(configuration);
             services.AddMagicConfiguration();
             services.AddMagicCaching();
             services.AddMagicHttp();
             services.AddMagicLogging();
-            services.AddMagicSignals();
             services.AddMagicExceptions();
             services.AddMagicEndpoints();
             services.AddMagicAuthorization(configuration);
@@ -87,20 +88,29 @@ namespace magic.library
         /// Wires up magic.lambda.io to use the default file, folder and stream service.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicFileServices(this IServiceCollection services)
+        /// <param name="configuration">Your configuration settings.</param>
+        public static void AddMagicFileServices(this IServiceCollection services, IConfiguration configuration)
         {
             /*
-             * Associating the IFileServices, IFolderService and IStreamService with its default implementation.
+             * Associating the IFileServices, IFolderService, IStreamService, and IRootResolver with
+             * its correct implementation according to configuration settings, defaulting to their
+             * default implementations.
              */
-            services.AddTransient<IFileService, FileService>();
-            services.AddTransient<IFolderService, FolderService>();
-            services.AddTransient<IStreamService, StreamService>();
+            services.AddTransient(
+                typeof(IFileService),
+                GetType(configuration["magic:io:file-service"] ?? "magic.node.services.FileService"));
 
-            /*
-             * Associating the root folder resolver with our own internal class,
-             * that resolves the root folder for IO operations.
-             */
-            services.AddTransient<IRootResolver, RootResolver>();
+            services.AddTransient(
+                typeof(IFolderService),
+                GetType(configuration["magic:io:folder-service"] ?? "magic.node.services.FolderService"));
+
+            services.AddTransient(
+                typeof(IStreamService),
+                GetType(configuration["magic:io:stream-service"] ?? "magic.node.services.StreamService"));
+
+            services.AddTransient(
+                typeof(IRootResolver),
+                GetType(configuration["magic:io:root-resolver"] ?? "magic.library.internals.RootResolver"));
         }
 
         /// <summary>
@@ -494,6 +504,22 @@ namespace magic.library
         #endregion
 
         #region [ -- Private helper methods -- ]
+
+        /*
+         * Resolves the specified type and returns to caller.
+         */
+        static Type GetType(string name)
+        {
+            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (asm.FullName.StartsWith("System."))
+                    continue;
+                var result = asm.GetType(name);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
 
         /*
          * Returns all module folders to caller.
