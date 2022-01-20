@@ -32,9 +32,10 @@ using magic.lambda.mime.services;
 using magic.lambda.http.contracts;
 using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
-using magic.lambda.logging.helpers;
 using magic.lambda.config.services;
 using magic.lambda.caching.services;
+using magic.lambda.logging.services;
+using magic.lambda.logging.contracts;
 using magic.lambda.caching.contracts;
 using magic.lambda.scheduler.services;
 using magic.lambda.scheduler.contracts;
@@ -71,7 +72,7 @@ namespace magic.library
             services.AddMagicConfiguration();
             services.AddMagicCaching();
             services.AddMagicHttp();
-            services.AddMagicLogging();
+            services.AddMagicLogging(configuration);
             services.AddMagicExceptions();
             services.AddMagicEndpoints();
             services.AddMagicAuthorization(configuration);
@@ -144,14 +145,15 @@ namespace magic.library
         /// Tying up audit logging for Magic.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicLogging(this IServiceCollection services)
+        public static void AddMagicLogging(this IServiceCollection services, IConfiguration configuration)
         {
             /*
              * Associating magic.lambda.logging's ILogger service contract with
-             * our internal "Logger" class, which is the class actually logging
-             * entries, when for instance the [log.info] slot is invoked.
+             * whatever implementation declared in our appsettings.json file.
              */
-            services.AddTransient<ILogger, Logger>();
+            services.AddTransient(
+                typeof(ILogger),
+                GetType(configuration["magic:logging:service"] ?? "magic.lambda.logging.services.Logger"));
         }
 
         /// <summary>
