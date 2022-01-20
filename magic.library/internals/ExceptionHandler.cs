@@ -14,7 +14,7 @@ using magic.node;
 using magic.node.contracts;
 using magic.node.extensions;
 using magic.signals.contracts;
-using magic.lambda.logging.helpers;
+using magic.lambda.logging.contracts;
 using magic.endpoint.services.utilities;
 
 namespace magic.library.internals
