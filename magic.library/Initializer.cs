@@ -154,6 +154,9 @@ namespace magic.library
             services.AddTransient(
                 typeof(ILogger),
                 GetType(configuration["magic:logging:service"] ?? "magic.lambda.logging.services.Logger"));
+            services.AddTransient(
+                typeof(ILogQuery),
+                GetType(configuration["magic:logging:service"] ?? "magic.lambda.logging.services.Logger"));
         }
 
         /// <summary>
