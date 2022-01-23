@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <PackageReference Include="magic.data.cql" Version="10.0.19" />
+    <PackageReference Include="magic.lambda.cql" Version="10.0.19" />
     <PackageReference Include="magic.lambda" Version="10.0.18" />
     <PackageReference Include="magic.lambda.guid" Version="10.0.18" />
     <PackageReference Include="magic.lambda.config" Version="10.0.18" />
