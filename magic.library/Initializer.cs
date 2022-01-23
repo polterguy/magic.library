@@ -145,6 +145,7 @@ namespace magic.library
         /// Tying up audit logging for Magic.
         /// </summary>
         /// <param name="services">Your service collection.</param>
+        /// <param name="configuration">Configruation object.</param>
         public static void AddMagicLogging(this IServiceCollection services, IConfiguration configuration)
         {
             /*
