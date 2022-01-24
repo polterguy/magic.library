@@ -474,8 +474,6 @@ namespace magic.library
                     .StartAsync(maxThreads)
                     .GetAwaiter()
                     .GetResult();
-                var logger = app.ApplicationServices.GetService<ILogger>();
-                logger.Info($"Starting task scheduler with {maxThreads} as maximum concurrent threads allowed to execute simultaneously for scheduled tasks");
             }
         }
 
