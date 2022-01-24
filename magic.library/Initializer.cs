@@ -374,13 +374,6 @@ namespace magic.library
                 if (configuration["magic:sockets:url"] != null)
                     conf.MapHub<MagicHub>("/sockets");
             });
-
-            // Creating a log entry for having started application, but only if system has beeen setup.
-            if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
-            {
-                var logger = app.ApplicationServices.GetService<ILogger>();
-                logger.Info("Magic was successfully started");
-            }
         }
 
         /// <summary>
