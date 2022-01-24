@@ -508,11 +508,12 @@ namespace magic.library
          */
         static Type GetType(string name)
         {
-            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Assembly idxAsm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                if (asm.FullName.StartsWith("System."))
+                if (idxAsm.FullName.StartsWith("System."))
                     continue;
-                var result = asm.GetType(name);
+
+                var result = idxAsm.GetType(name);
                 if (result != null)
                     return result;
             }
@@ -556,30 +557,11 @@ namespace magic.library
             }
             catch (Exception err)
             {
-                // Verifying system has been configured before attempting to log error.
-                if (configuration["magic:auth:secret"] == "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
-                {
-                    // System has NOT been configured, simply logging to console in an attempt to try to warn user.
-                    Console.WriteLine(err.Message);
-                }
-                else
-                {
-                    /*
-                     * In case system has been configured erronously with for instance a bogus database
-                     * connection string, we wrap our attempt to log the exception inside a try/catch,
-                     * and just silently catch the exception and write it to the console.
-                     */
-                    try
-                    {
-                        var logger = app.ApplicationServices.GetService<ILogger>();
-                        logger.Error($"Exception occurred as we tried to initialize module '{startupFolder}', message from system was '{err.Message}'", err);
-                    }
-                    catch (Exception error)
-                    {
-                        // Nothing to do here really ...
-                        Console.WriteLine(error.Message);
-                    }
-                }
+                /*
+                 * Since we're not sure if we've configured the system we've got no other options
+                 * but to log this to the console.
+                 */
+                Console.WriteLine(err.Message);
             }
         }
 
