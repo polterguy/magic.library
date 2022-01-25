@@ -217,7 +217,7 @@ namespace magic.library.internals
             var logger = app.ApplicationServices.GetService<ILogger>();
             try
             {
-                await logger.ErrorAsync($"Unhandled exception occurred '{ex.Error.Message}' at '{ex.Path}'", ex.Error);
+                await logger.ErrorAsync($"Unhandled exception occurred '{ex.Error.Message}' at '{ex.Path}'", ex.Error.StackTrace);
             }
             catch
             {
