@@ -70,7 +70,7 @@ namespace magic.library
             services.AddMagicSignals();
             services.AddMagicFileServices(configuration);
             services.AddMagicConfiguration();
-            services.AddMagicCaching();
+            services.AddMagicCaching(configuration);
             services.AddMagicHttp();
             services.AddMagicLogging(configuration);
             services.AddMagicExceptions();
@@ -126,9 +126,16 @@ namespace magic.library
         /// Adds the Magic caching parts to your service collection.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicCaching(this IServiceCollection services)
+        /// <param name="configuration">Configuration object.</param>
+        public static void AddMagicCaching(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IMagicCache, MagicMemoryCache>();
+            /*
+             * Associating magic.lambda.logging's ILogger service contract with
+             * whatever implementation declared in our appsettings.json file.
+             */
+            var type = GetType(configuration["magic:caching:service"] ?? "magic.lambda.caching.services.MagicMemoryCache");
+            services.AddTransient(type);
+            services.AddSingleton(typeof(IMagicCache), (svc) => svc.GetService(type));
         }
 
         /// <summary>
