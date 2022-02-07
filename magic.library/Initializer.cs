@@ -71,7 +71,7 @@ namespace magic.library
             services.AddMagicFileServices(configuration);
             services.AddMagicConfiguration();
             services.AddMagicCaching(configuration);
-            services.AddMagicHttp();
+            services.AddMagicHttp(configuration);
             services.AddMagicLogging(configuration);
             services.AddMagicExceptions();
             services.AddMagicEndpoints();
@@ -142,10 +142,12 @@ namespace magic.library
         /// Making sure Magic is able to invoke HTTP REST endpoints.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicHttp(this IServiceCollection services)
+        public static void AddMagicHttp(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpClient();
-            services.AddTransient<IMagicHttp, MagicHttp>();
+            services.AddTransient(
+                typeof(IMagicHttp),
+                GetType(configuration["magic:http:service"] ?? "magic.lambda.http.services.MagicHttp"));
         }
 
         /// <summary>
