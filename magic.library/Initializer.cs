@@ -380,8 +380,9 @@ namespace magic.library
                  * Checking if SignalR is enabled, and if so, making sure we
                  * resolve the "/sockets" endpoint as SignalR invocations.
                  */
-                if (configuration["magic:sockets:url"] != null)
-                    conf.MapHub<MagicHub>("/sockets");
+                var socketsUrl = configuration["magic:sockets:url"];
+                if (socketsUrl != null)
+                    conf.MapHub<MagicHub>(socketsUrl);
             });
         }
 
@@ -503,7 +504,12 @@ namespace magic.library
              * in configuration.
              */
             if (!string.IsNullOrEmpty(origins))
-                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(origins.Split(',')));
+                app.UseCors(x => 
+                    x
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .WithOrigins(origins.Split(',').Select(x => x.Trim()).ToArray()));
             else
                 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()); //NOSONAR
         }
