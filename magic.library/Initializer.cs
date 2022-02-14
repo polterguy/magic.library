@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using magic.data.cql.io;
 using magic.node.services;
 using magic.node.contracts;
 using magic.lambda.sockets;
@@ -111,6 +112,14 @@ namespace magic.library
             services.AddTransient(
                 typeof(IRootResolver),
                 GetType(configuration["magic:io:root-resolver"] ?? "magic.library.internals.RootResolver"));
+
+            // Ensuring "mixed service" has access to actual service implementations.
+            services.AddTransient<CqlFileService>();
+            services.AddTransient<CqlFolderService>();
+            services.AddTransient<CqlStreamService>();
+            services.AddTransient<FileService>();
+            services.AddTransient<FolderService>();
+            services.AddTransient<StreamService>();
         }
 
         /// <summary>
