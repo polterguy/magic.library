@@ -441,7 +441,7 @@ namespace magic.library
                  */
                 if (new DirectoryInfo(idxSystemFolder).Name == "magic.startup")
                 {
-                    ExecuteStartupFilesWrapper(app, configuration, idxSystemFolder);
+                    ExecuteStartupFilesWrapper(app, idxSystemFolder);
                 }
                 else
                 {
@@ -453,7 +453,7 @@ namespace magic.library
                         .ListFolders(idxSystemFolder)
                         .Where(x => new DirectoryInfo(x).Name == "magic.startup"))
                     {
-                        ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder);
+                        ExecuteStartupFilesWrapper(app, idxModuleFolder);
                     }
 
                     /*
@@ -467,7 +467,7 @@ namespace magic.library
                         .SelectMany(x => folderService.ListFolders(x))
                         .Where(x => x == "magic.startup"))
                     {
-                        ExecuteStartupFilesWrapper(app, configuration, idxModuleFolder);
+                        ExecuteStartupFilesWrapper(app, idxModuleFolder);
                     }
                 }
             }
@@ -567,7 +567,6 @@ namespace magic.library
          */
         static void ExecuteStartupFilesWrapper(
             IApplicationBuilder app,
-            IConfiguration configuration,
             string startupFolder)
         {
             /*
