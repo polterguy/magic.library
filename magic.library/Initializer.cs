@@ -44,6 +44,7 @@ using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
 using magic.endpoint.services.utilities;
 using sig_serv = magic.signals.services;
+using magic.lambda.mime.contracts.settings;
 
 namespace magic.library
 {
@@ -78,7 +79,7 @@ namespace magic.library
             services.AddMagicEndpoints();
             services.AddMagicAuthorization(configuration);
             services.AddMagicScheduler();
-            services.AddMagicMail();
+            services.AddMagicMail(configuration);
             services.AddMagicLambda();
             services.AddMagicSockets(configuration);
         }
@@ -333,10 +334,14 @@ namespace magic.library
         /// Adds Magic Mail to your application
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicMail(this IServiceCollection services)
+        /// <param name="configuration">Configuration object.</param>
+        public static void AddMagicMail(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<ISmtpClient, SmtpClient>();
             services.AddTransient<IPop3Client, Pop3Client>();
+            services.Configure<ConnectionSettingsSmtp>(configuration.GetSection("magic:smtp"));
+            services.Configure<ConnectionSettingsPop3>(configuration.GetSection("magic:pop3"));
+            services.AddOptions();
         }
 
         /// <summary>
