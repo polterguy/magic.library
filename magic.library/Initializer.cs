@@ -35,6 +35,7 @@ using magic.lambda.mime.services;
 using magic.lambda.http.contracts;
 using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
+using magic.data.common.contracts;
 using magic.lambda.config.services;
 using magic.lambda.caching.services;
 using magic.lambda.logging.services;
@@ -75,6 +76,7 @@ namespace magic.library
 
             // Wiring up Magic specific services.
             services.AddMagicSignals();
+            services.AddMagicData(configuration);
             services.AddMagicFileServices(configuration);
             services.AddMagicConfiguration();
             services.AddMagicCaching(configuration);
@@ -90,6 +92,16 @@ namespace magic.library
         }
 
         #region [ -- Helper methods to wire up IoC container -- ]
+
+        /// <summary>
+        /// Wires up magic.data.common to allow us to retrieve database connection strings from configuration settings.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        /// <param name="configuration">Your configuration settings.</param>
+        public static void AddMagicData(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<IDataSettings, AppSettingsDataSettings>();
+        }
 
         /// <summary>
         /// Wires up magic.lambda.io to use the default file, folder and stream service.
@@ -185,7 +197,12 @@ namespace magic.library
                 GetType(configuration["magic:logging:service"] ?? "magic.lambda.logging.services.Logger"));
 
             services.Configure<LogSettings>(configuration.GetSection("magic:logging"));
-            services.AddTransient<LogSettings>((svc) => svc.GetService<IOptionsSnapshot<LogSettings>>().Value);
+
+            /*
+             * Notice, cannot use IOptionsSnapshot since it's a SCOPED services implying background
+             * tasks will not have access to it.
+             */
+            services.AddTransient<LogSettings>((svc) => svc.GetService<IOptions<LogSettings>>().Value);
         }
 
         /// <summary>
@@ -349,8 +366,13 @@ namespace magic.library
             services.AddTransient<IPop3Client, Pop3Client>();
             services.Configure<ConnectionSettingsSmtp>(configuration.GetSection("magic:smtp"));
             services.Configure<ConnectionSettingsPop3>(configuration.GetSection("magic:pop3"));
-            services.AddTransient<ConnectionSettingsSmtp>((svc) => svc.GetService<IOptionsSnapshot<ConnectionSettingsSmtp>>().Value);
-            services.AddTransient<ConnectionSettingsPop3>((svc) => svc.GetService<IOptionsSnapshot<ConnectionSettingsPop3>>().Value);
+
+            /*
+             * Notice, cannot use IOptionsSnapshot since it's a SCOPED services implying background
+             * tasks will not have access to it.
+             */
+            services.AddTransient<ConnectionSettingsSmtp>((svc) => svc.GetService<IOptions<ConnectionSettingsSmtp>>().Value);
+            services.AddTransient<ConnectionSettingsPop3>((svc) => svc.GetService<IOptions<ConnectionSettingsPop3>>().Value);
         }
 
         /// <summary>
@@ -362,7 +384,12 @@ namespace magic.library
         {
             services.AddSingleton<ThreadRunner>();
             services.Configure<LambdaSettings>(configuration.GetSection("magic:lambda"));
-            services.AddTransient<LambdaSettings>((svc) => svc.GetService<IOptionsSnapshot<LambdaSettings>>().Value);
+
+            /*
+             * Notice, cannot use IOptionsSnapshot since it's a SCOPED services implying background
+             * tasks will not have access to it.
+             */
+            services.AddTransient<LambdaSettings>((svc) => svc.GetService<IOptions<LambdaSettings>>().Value);
         }
 
         /// <summary>
