@@ -183,6 +183,9 @@ namespace magic.library
             services.AddTransient(
                 typeof(ILogQuery),
                 GetType(configuration["magic:logging:service"] ?? "magic.lambda.logging.services.Logger"));
+
+            services.Configure<LogSettings>(configuration.GetSection("magic:logging"));
+            services.AddTransient<LogSettings>((svc) => svc.GetService<IOptionsSnapshot<LogSettings>>().Value);
         }
 
         /// <summary>
