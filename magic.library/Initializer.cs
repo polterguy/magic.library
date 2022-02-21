@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,6 +68,9 @@ namespace magic.library
 
             // Making sure we add all controllers in AppDomain and use Newtonsoft JSON as JSON library.
             services.AddControllers().AddNewtonsoftJson();
+
+            // Ensuring we're adding options.
+            services.AddOptions();
 
             // Wiring up Magic specific services.
             services.AddMagicSignals();
@@ -341,7 +345,8 @@ namespace magic.library
             services.AddTransient<IPop3Client, Pop3Client>();
             services.Configure<ConnectionSettingsSmtp>(configuration.GetSection("magic:smtp"));
             services.Configure<ConnectionSettingsPop3>(configuration.GetSection("magic:pop3"));
-            services.AddOptions();
+            services.AddTransient<ConnectionSettingsSmtp>((svc) => svc.GetService<IOptionsSnapshot<ConnectionSettingsSmtp>>().Value);
+            services.AddTransient<ConnectionSettingsPop3>((svc) => svc.GetService<IOptionsSnapshot<ConnectionSettingsPop3>>().Value);
         }
 
         /// <summary>
