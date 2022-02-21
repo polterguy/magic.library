@@ -359,11 +359,7 @@ namespace magic.library
         {
             services.AddSingleton<ThreadRunner>();
             services.Configure<LambdaSettings>(configuration.GetSection("magic:lambda"));
-            services.AddTransient<LambdaSettings>((svc) =>
-            {
-                var settings = svc.GetService<IOptionsSnapshot<LambdaSettings>>().Value;
-                return settings;
-            });
+            services.AddTransient<LambdaSettings>((svc) => svc.GetService<IOptionsSnapshot<LambdaSettings>>().Value);
         }
 
         /// <summary>
