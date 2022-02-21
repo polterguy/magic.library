@@ -24,6 +24,7 @@ using magic.lambda.sockets;
 using magic.node.extensions;
 using magic.lambda.threading;
 using magic.signals.services;
+using magic.lambda.contracts;
 using magic.signals.contracts;
 using magic.endpoint.services;
 using magic.library.internals;
@@ -84,7 +85,7 @@ namespace magic.library
             services.AddMagicAuthorization(configuration);
             services.AddMagicScheduler();
             services.AddMagicMail(configuration);
-            services.AddMagicLambda();
+            services.AddMagicLambda(configuration);
             services.AddMagicSockets(configuration);
         }
 
@@ -353,9 +354,16 @@ namespace magic.library
         /// Adds the Magic Lambda library parts to your service collection.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        public static void AddMagicLambda(this IServiceCollection services)
+        /// <param name="configuration">Configuration object.</param>
+        public static void AddMagicLambda(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<ThreadRunner>();
+            services.Configure<LambdaSettings>(configuration.GetSection("magic:lambda"));
+            services.AddTransient<LambdaSettings>((svc) =>
+            {
+                var settings = svc.GetService<IOptionsSnapshot<LambdaSettings>>().Value;
+                return settings;
+            });
         }
 
         /// <summary>
