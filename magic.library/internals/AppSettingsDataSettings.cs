@@ -8,7 +8,7 @@ using magic.data.common.contracts;
 namespace magic.library.internals
 {
     /*
-     * Internal helper class to handle unhandled exceptions.
+     * Internal helper class to handle settings for magic.data.common.
      */
     internal class AppSettingsDataSettings : IDataSettings
     {

@@ -274,6 +274,9 @@ namespace magic.library
              */
             services.AddTransient<ITicketProvider, HttpTicketProvider>();
 
+            // Configuring default auth settings provider.
+            services.AddTransient<IAuthSettings, AuthSettings>();
+
             /*
              * Parts of Magic depends upon having access to
              * the IHttpContextAccessor, more speifically the above
