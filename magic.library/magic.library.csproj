@@ -51,7 +51,7 @@
     <PackageReference Include="magic.lambda.crypto" Version="11.0.5" />
     <PackageReference Include="magic.lambda.http" Version="11.0.5" />
     <PackageReference Include="magic.lambda.hyperlambda" Version="11.0.5" />
-    <PackageReference Include="magic.lambda.io" Version="11.0.5" />
+    <PackageReference Include="magic.lambda.io" Version="11.0.7" />
     <PackageReference Include="magic.lambda.csv" Version="11.0.5" />
     <PackageReference Include="magic.lambda.json" Version="11.0.5" />
     <PackageReference Include="magic.lambda.html" Version="11.0.5" />
@@ -65,7 +65,7 @@
     <PackageReference Include="magic.lambda.pgsql" Version="11.0.5" />
     <PackageReference Include="magic.lambda.mssql" Version="11.0.5" />
     <PackageReference Include="magic.lambda.scheduler" Version="11.0.5" />
-    <PackageReference Include="magic.lambda.slots" Version="11.0.5" />
+    <PackageReference Include="magic.lambda.slots" Version="11.0.7" />
     <PackageReference Include="magic.lambda.strings" Version="11.0.5" />
     <PackageReference Include="magic.lambda.dates" Version="11.0.5" />
     <PackageReference Include="magic.lambda.validators" Version="11.0.5" />
