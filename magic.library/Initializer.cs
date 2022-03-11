@@ -169,6 +169,7 @@ namespace magic.library
         /// Making sure Magic is able to invoke HTTP REST endpoints.
         /// </summary>
         /// <param name="services">Your service collection.</param>
+        /// <param name="configuration">Needed todynamically determine which service to use for HTTP invocations.</param>
         public static void AddMagicHttp(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpClient();
