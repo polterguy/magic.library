@@ -632,7 +632,7 @@ namespace magic.library
                  * Since we're not sure if we've configured the system we've got no other options
                  * but to log this to the console.
                  */
-                Console.WriteLine(err.Message);
+                Console.Error.WriteLine(err.Message);
             }
         }
 
