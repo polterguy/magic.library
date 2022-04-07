@@ -89,6 +89,10 @@ namespace magic.library
             services.AddMagicMail(configuration);
             services.AddMagicLambda(configuration);
             services.AddMagicSockets(configuration);
+
+            // Checking if server is configured to assume UTC dates, defaulting to "true".
+            var assumeUtc = configuration["magic:culture:defaultTimeZone"]?.ToLowerInvariant() ?? "utc";
+            Converter.AssumeUtc = assumeUtc == "utc";
         }
 
         #region [ -- Helper methods to wire up IoC container -- ]
