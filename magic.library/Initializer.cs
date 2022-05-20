@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -29,7 +30,6 @@ using magic.signals.contracts;
 using magic.endpoint.services;
 using magic.library.internals;
 using magic.endpoint.contracts;
-using magic.lambda.http.services;
 using magic.lambda.auth.services;
 using magic.lambda.mime.services;
 using magic.lambda.http.contracts;
@@ -37,15 +37,11 @@ using magic.lambda.auth.contracts;
 using magic.lambda.mime.contracts;
 using magic.data.common.contracts;
 using magic.lambda.config.services;
-using magic.lambda.caching.services;
-using magic.lambda.logging.services;
 using magic.lambda.logging.contracts;
 using magic.lambda.caching.contracts;
 using magic.lambda.scheduler.services;
 using magic.lambda.scheduler.contracts;
-using magic.lambda.scheduler.utilities;
 using magic.node.extensions.hyperlambda;
-using magic.endpoint.services.utilities;
 using sig_serv = magic.signals.services;
 using magic.lambda.mime.contracts.settings;
 
@@ -173,10 +169,33 @@ namespace magic.library
         /// Making sure Magic is able to invoke HTTP REST endpoints.
         /// </summary>
         /// <param name="services">Your service collection.</param>
-        /// <param name="configuration">Needed todynamically determine which service to use for HTTP invocations.</param>
-        public static void AddMagicHttp(this IServiceCollection services, IConfiguration configuration)
+        /// <param name="configuration">Needed to dynamically determine which service to use for HTTP invocations.</param>
+        public static void AddMagicHttp(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
-            services.AddHttpClient();
+            if (string.IsNullOrEmpty(configuration["magic:trusted-certs"]))
+            {
+                services.AddHttpClient();
+            }
+            else
+            {
+                services.AddHttpClient(Options.DefaultName).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                {
+                    ClientCertificateOptions = ClientCertificateOption.Manual,
+                    ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
+                    {
+                        if (policyErrors == System.Net.Security.SslPolicyErrors.None)
+                            return true;
+                        var trusted = configuration["magic:trusted-certs"];
+                        if (trusted == "*")
+                            return true;
+                        if (trusted.Split(',').Select(x => x.Trim()).Contains(cert.Thumbprint))
+                            return true;
+                        return false;
+                    }
+                });
+            }
             services.AddTransient(
                 typeof(IMagicHttp),
                 GetType(configuration["magic:http:service"] ?? "magic.lambda.http.services.MagicHttp"));
