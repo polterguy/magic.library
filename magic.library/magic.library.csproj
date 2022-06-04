@@ -73,7 +73,7 @@
     <PackageReference Include="magic.signals" Version="13.4.0" />
     <PackageReference Include="magic.lambda.auth" Version="13.4.0" />
     <PackageReference Include="magic.endpoint" Version="13.4.0" />
-    <PackageReference Include="magic.endpoint.services" Version="13.4.0" />
+    <PackageReference Include="magic.endpoint.services" Version="13.4.2" />
     <PackageReference Include="magic.lambda.sockets" Version="13.4.0" />
     <PackageReference Include="magic.lambda.system" Version="13.4.0" />
     <PackageReference Include="magic.lambda.threading" Version="13.4.0" />
