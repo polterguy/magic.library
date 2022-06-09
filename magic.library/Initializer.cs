@@ -223,7 +223,7 @@ namespace magic.library
             services.Configure<LogSettings>(configuration.GetSection("magic:logging"));
 
             // TODO: Figure out how to fix this such that it works from background tasks.
-            services.AddTransient<LogSettings>((svc) => svc.GetService<IOptionsSnapshot<LogSettings>>().Value);
+            services.AddTransient<LogSettings>((svc) => svc.GetService<IOptions<LogSettings>>().Value);
         }
 
         /// <summary>
@@ -392,8 +392,8 @@ namespace magic.library
             services.Configure<ConnectionSettingsPop3>(configuration.GetSection("magic:pop3"));
 
             // TODO: Figure out how to fix this such that it works from background tasks.
-            services.AddTransient<ConnectionSettingsSmtp>((svc) => svc.GetService<IOptionsSnapshot<ConnectionSettingsSmtp>>().Value);
-            services.AddTransient<ConnectionSettingsPop3>((svc) => svc.GetService<IOptionsSnapshot<ConnectionSettingsPop3>>().Value);
+            services.AddTransient<ConnectionSettingsSmtp>((svc) => svc.GetService<IOptions<ConnectionSettingsSmtp>>().Value);
+            services.AddTransient<ConnectionSettingsPop3>((svc) => svc.GetService<IOptions<ConnectionSettingsPop3>>().Value);
         }
 
         /// <summary>
@@ -407,7 +407,7 @@ namespace magic.library
             services.Configure<LambdaSettings>(configuration.GetSection("magic:lambda"));
 
             // TODO: Figure out how to fix this such that it works from background tasks.
-            services.AddTransient<LambdaSettings>((svc) => svc.GetService<IOptionsSnapshot<LambdaSettings>>().Value);
+            services.AddTransient<LambdaSettings>((svc) => svc.GetService<IOptions<LambdaSettings>>().Value);
         }
 
         /// <summary>
