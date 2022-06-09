@@ -222,7 +222,7 @@ namespace magic.library
 
             services.Configure<LogSettings>(configuration.GetSection("magic:logging"));
 
-            // TODO: Figure out how to fix this such that it works from background tasks.
+            // TODO: Figure out how to fix this such that it reloads when appsettings.json file is edited (without using IOptionsSnapshot since it's scoped)
             services.AddTransient<LogSettings>((svc) => svc.GetService<IOptions<LogSettings>>().Value);
         }
 
@@ -391,7 +391,7 @@ namespace magic.library
             services.Configure<ConnectionSettingsSmtp>(configuration.GetSection("magic:smtp"));
             services.Configure<ConnectionSettingsPop3>(configuration.GetSection("magic:pop3"));
 
-            // TODO: Figure out how to fix this such that it works from background tasks.
+            // TODO: Figure out how to fix this such that it reloads when appsettings.json file is edited (without using IOptionsSnapshot since it's scoped)
             services.AddTransient<ConnectionSettingsSmtp>((svc) => svc.GetService<IOptions<ConnectionSettingsSmtp>>().Value);
             services.AddTransient<ConnectionSettingsPop3>((svc) => svc.GetService<IOptions<ConnectionSettingsPop3>>().Value);
         }
@@ -406,7 +406,7 @@ namespace magic.library
             services.AddSingleton<ThreadRunner>();
             services.Configure<LambdaSettings>(configuration.GetSection("magic:lambda"));
 
-            // TODO: Figure out how to fix this such that it works from background tasks.
+            // TODO: Figure out how to fix this such that it reloads when appsettings.json file is edited (without using IOptionsSnapshot since it's scoped)
             services.AddTransient<LambdaSettings>((svc) => svc.GetService<IOptions<LambdaSettings>>().Value);
         }
 
