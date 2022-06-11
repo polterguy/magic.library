@@ -221,9 +221,7 @@ namespace magic.library
                 GetType(configuration["magic:logging:service"] ?? "magic.lambda.logging.services.Logger"));
 
             services.Configure<LogSettings>(configuration.GetSection("magic:logging"));
-
-            // TODO: Figure out how to fix this such that it reloads when appsettings.json file is edited (without using IOptionsSnapshot since it's scoped)
-            services.AddTransient<LogSettings>((svc) => svc.GetService<IOptions<LogSettings>>().Value);
+            services.AddTransient<LogSettings>((svc) => svc.GetService<IOptionsMonitor<LogSettings>>().CurrentValue);
         }
 
         /// <summary>
@@ -390,10 +388,8 @@ namespace magic.library
             services.AddTransient<IPop3Client, Pop3Client>();
             services.Configure<ConnectionSettingsSmtp>(configuration.GetSection("magic:smtp"));
             services.Configure<ConnectionSettingsPop3>(configuration.GetSection("magic:pop3"));
-
-            // TODO: Figure out how to fix this such that it reloads when appsettings.json file is edited (without using IOptionsSnapshot since it's scoped)
-            services.AddTransient<ConnectionSettingsSmtp>((svc) => svc.GetService<IOptions<ConnectionSettingsSmtp>>().Value);
-            services.AddTransient<ConnectionSettingsPop3>((svc) => svc.GetService<IOptions<ConnectionSettingsPop3>>().Value);
+            services.AddTransient<ConnectionSettingsSmtp>((svc) => svc.GetService<IOptionsMonitor<ConnectionSettingsSmtp>>().CurrentValue);
+            services.AddTransient<ConnectionSettingsPop3>((svc) => svc.GetService<IOptionsMonitor<ConnectionSettingsPop3>>().CurrentValue);
         }
 
         /// <summary>
@@ -405,9 +401,7 @@ namespace magic.library
         {
             services.AddSingleton<ThreadRunner>();
             services.Configure<LambdaSettings>(configuration.GetSection("magic:lambda"));
-
-            // TODO: Figure out how to fix this such that it reloads when appsettings.json file is edited (without using IOptionsSnapshot since it's scoped)
-            services.AddTransient<LambdaSettings>((svc) => svc.GetService<IOptions<LambdaSettings>>().Value);
+            services.AddTransient<LambdaSettings>((svc) => svc.GetService<IOptionsMonitor<LambdaSettings>>().CurrentValue);
         }
 
         /// <summary>
