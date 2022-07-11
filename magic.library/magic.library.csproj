@@ -42,8 +42,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="magic.data.cql" Version="14.0.4" />
-    <PackageReference Include="magic.lambda.cql" Version="14.0.4" />
     <PackageReference Include="magic.lambda" Version="14.0.4" />
     <PackageReference Include="magic.lambda.guid" Version="14.0.4" />
     <PackageReference Include="magic.lambda.config" Version="14.0.4" />
