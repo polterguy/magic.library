@@ -540,9 +540,8 @@ namespace magic.library
                  * Starting task scheduler, passing in max concurrent jobs, defaulting to 8 if no
                  * configuration value is found.
                  */
-                var maxThreads = int.Parse(configuration["magic:scheduler:max-threads"] ?? "8");
                 app.ApplicationServices.GetService<ITaskScheduler>()
-                    .StartAsync(maxThreads)
+                    .StartAsync()
                     .GetAwaiter()
                     .GetResult();
             }
