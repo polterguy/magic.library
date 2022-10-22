@@ -22,7 +22,7 @@ namespace magic.library.internals
         #region [ -- Interface implementations -- ]
 
         /// <inheritdoc />
-        public string Secret { get => _configuration["magic:auth:secret"]; }
+        public string Secret { get => _configuration["magic:auth:secret"] ?? ""; }
 
         /// <inheritdoc />
         public bool HttpsOnly { get => _configuration["magic:auth:https-only"] == "True"; }

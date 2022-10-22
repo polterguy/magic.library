@@ -303,9 +303,9 @@ namespace magic.library
              * Retrieving secret from configuration file, and wiring up
              * authentication to use JWT Bearer tokens.
              */
-            var secret = configuration["magic:auth:secret"];
-            if (string.IsNullOrEmpty(secret))
-                throw new HyperlambdaException("Couldn't find any 'magic:auth:secret' configuration settings in your appSettings.json file. Magic can never be secure unless you provide this configuration setting.");
+            var secret = configuration["magic:auth:secret"] ?? "";
+            if (secret.Length < 50)
+                secret += "abcdefghijklmnopqrstuvwxyz1234567890";
 
             /*
              * Wiring up .Net Core to use JWT Bearer tokens for auth.
@@ -353,7 +353,10 @@ namespace magic.library
                      */
                     IssuerSigningKeyResolver = (token, secToken, kid, valParams) =>
                     {
-                        var key = Encoding.ASCII.GetBytes(configuration["magic:auth:secret"]);
+                        var secret = configuration["magic:auth:secret"] ?? "";
+                        if (secret.Length < 50)
+                            secret += "abcdefghijklmnopqrstuvwxyz1234567890";
+                        var key = Encoding.ASCII.GetBytes(secret);
                         return new List<SecurityKey>() { new SymmetricSecurityKey(key) };
                     }
                 };
@@ -534,7 +537,7 @@ namespace magic.library
             this IApplicationBuilder app,
             IConfiguration configuration)
         {
-            if (configuration["magic:auth:secret"] != "THIS-IS-NOT-A-GOOD-SECRET-PLEASE-CHANGE-IT")
+            if (configuration["magic:auth:secret"]?.Length > 50)
             {
                 /*
                  * Starting task scheduler, passing in max concurrent jobs, defaulting to 8 if no
