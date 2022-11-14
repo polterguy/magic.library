@@ -270,7 +270,7 @@ namespace magic.library
             // Making sure we resolve correct service according to URL.
             services.AddScoped<IHttpExecutorAsync>(provider => {
                 var context = provider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                if (context.Request.Path.ToString().StartsWith("/magic/"))
+                if (context.Request.Path.StartsWithSegments("/magic"))
                     return provider.GetRequiredService<HttpApiExecutorAsync>();
                 return provider.GetRequiredService<HttpFileExecutorAsync>();
             });
