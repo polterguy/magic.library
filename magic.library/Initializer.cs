@@ -43,6 +43,7 @@ using magic.lambda.scheduler.contracts;
 using magic.node.extensions.hyperlambda;
 using sig_serv = magic.signals.services;
 using magic.lambda.mime.contracts.settings;
+using Microsoft.AspNetCore.Http;
 
 namespace magic.library
 {
@@ -263,7 +264,16 @@ namespace magic.library
         public static void AddMagicEndpoints(this IServiceCollection services)
         {
             // Configuring the default executor to execute dynamic URLs.
-            services.AddTransient<IHttpExecutorAsync, HttpExecutorAsync>();
+            services.AddTransient<HttpApiExecutorAsync>();
+            services.AddTransient<HttpFileExecutorAsync>();
+
+            // Making sure we resolve correct service according to URL.
+            services.AddScoped<IHttpExecutorAsync>(provider => {
+                var context = provider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                if (context.Request.Path.StartsWithSegments("/magic"))
+                    return provider.GetRequiredService<HttpApiExecutorAsync>();
+                return provider.GetRequiredService<HttpFileExecutorAsync>();
+            });
             services.AddTransient<IHttpArgumentsHandler, HttpArgumentsHandler>();
         }
 
