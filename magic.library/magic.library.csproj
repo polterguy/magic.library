@@ -53,6 +53,7 @@
     <PackageReference Include="magic.lambda.csv" Version="14.5.1" />
     <PackageReference Include="magic.lambda.json" Version="14.5.1" />
     <PackageReference Include="magic.lambda.html" Version="14.5.1" />
+    <PackageReference Include="magic.lambda.xml" Version="14.5.1" />
     <PackageReference Include="magic.lambda.logging" Version="14.5.1" />
     <PackageReference Include="magic.lambda.caching" Version="14.5.1" />
     <PackageReference Include="magic.lambda.math" Version="14.5.1" />
