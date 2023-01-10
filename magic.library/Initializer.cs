@@ -441,7 +441,7 @@ namespace magic.library
         public static void UseMagic(this IApplicationBuilder app, IConfiguration configuration)
         {
             app.UseMagicExceptions();
-            app.UseMagicStartupFiles(configuration);
+            app.UseMagicStartupFiles();
             app.UseMagicScheduler(configuration);
             app.UseHttpsRedirection();
             app.UseMagicCors(configuration);
@@ -489,52 +489,19 @@ namespace magic.library
         /// sub-module level.
         /// </summary>
         /// <param name="app">Your application builder.</param>
-        /// <param name="configuration">Your app's configuration.</param>
-        public static void UseMagicStartupFiles(
-            this IApplicationBuilder app,
-            IConfiguration configuration)
+        public static void UseMagicStartupFiles(this IApplicationBuilder app)
         {
-            /*
-             * Iterating through all system folders, such as "/modules/foo/" and "/system/auth/"
-             */
-            var folderService = app.ApplicationServices.GetService<IFolderService>();
-            foreach (var idxSystemFolder in GetModuleFolders(app))
-            {
-                /*
-                 * Checking if this folder is a "magic.startup" folder, implying e.g. "/system/magic.startup/"
-                 * or "/modules/magic.startup/"
-                 */
-                if (new DirectoryInfo(idxSystemFolder).Name == "magic.startup")
-                {
-                    ExecuteStartupFilesWrapper(app, idxSystemFolder);
-                }
-                else
-                {
-                    /*
-                     * Iterating through all folders that are module startup folders, implying e.g.
-                     * "/system/auth/magic.startup/" or "/modules/some-module/magic.startup/".
-                     */
-                    foreach (var idxModuleFolder in folderService
-                        .ListFolders(idxSystemFolder)
-                        .Where(x => new DirectoryInfo(x).Name == "magic.startup"))
-                    {
-                        ExecuteStartupFilesWrapper(app, idxModuleFolder);
-                    }
+            // Creating our services.
+            var signaler = app.ApplicationServices.GetService<ISignaler>();
+            var rootResolver = app.ApplicationServices.GetService<IRootResolver>();
+            var fileService = app.ApplicationServices.GetService<IFileService>();
 
-                    /*
-                     * Iterating through all sub folders of folders that are NOT "magic.startup" folders,
-                     * to see if there are sub-modules containing startup folders, such as e.g.
-                     * "/modules/some-module/some-sub-module/magic.startup/".
-                     */
-                    foreach (var idxModuleFolder in folderService
-                        .ListFolders(idxSystemFolder)
-                        .Where(x => new DirectoryInfo(x).Name != "magic.startup")
-                        .SelectMany(x => folderService.ListFolders(x))
-                        .Where(x => x == "magic.startup"))
-                    {
-                        ExecuteStartupFilesWrapper(app, idxModuleFolder);
-                    }
-                }
+            // Retrieving all folders inside of our "/modules/" folder.
+            var filename = rootResolver.AbsolutePath("system/startup.hl");
+            if (fileService.Exists(filename))
+            {
+                var lambda = HyperlambdaParser.Parse(fileService.Load(filename));
+                signaler.Signal("eval", lambda);
             }
         }
 
@@ -606,75 +573,6 @@ namespace magic.library
                     return result;
             }
             return null;
-        }
-
-        /*
-         * Returns all module folders to caller.
-         */
-        static IEnumerable<string> GetModuleFolders(IApplicationBuilder app)
-        {
-            // Creating our services.
-            var folderService = app.ApplicationServices.GetService<IFolderService>();
-            var rootResolver = app.ApplicationServices.GetService<IRootResolver>();
-
-            // Retrieving all folders inside of our "/modules/" folder.
-            var system = folderService.ListFolders(rootResolver.AbsolutePath("system/"));
-            var modules = folderService.ListFolders(rootResolver.AbsolutePath("modules/"));
-
-            // Returning folders to caller.
-            system.AddRange(modules);
-            return system;
-        }
-
-        /*
-         * Method responsible for executing startup files for specified folder.
-         */
-        static void ExecuteStartupFilesWrapper(
-            IApplicationBuilder app,
-            string startupFolder)
-        {
-            /*
-             * To avoid one module's startup files to prevent another module's startup files from
-             * executing, we wrap execution of a module's startup files inside a try/catch, and
-             * simply logs any errors, while still allowing execution to continue.
-             */
-            try
-            {
-                ExecuteHyperlambdaFilesRecursively(app, startupFolder);
-            }
-            catch (Exception err)
-            {
-                /*
-                 * Since we're not sure if we've configured the system we've got no other options
-                 * but to log this to the console.
-                 */
-                Console.Error.WriteLine(err.Message);
-            }
-        }
-
-        /*
-         * Will recursively execute every single Hyperlambda file inside of
-         * the specified folder.
-         */
-        static void ExecuteHyperlambdaFilesRecursively(IApplicationBuilder app, string folder)
-        {
-            // Creating our services.
-            var fileService = app.ApplicationServices.GetService<IFileService>();
-            var folderService = app.ApplicationServices.GetService<IFolderService>();
-            var signaler = app.ApplicationServices.GetService<ISignaler>();
-
-            // Startup folder, now executing all Hyperlambda files inside of it.
-            foreach (var idxFile in fileService.ListFiles(folder, ".hl"))
-            {
-                var lambda = HyperlambdaParser.Parse(fileService.Load(idxFile));
-                signaler.Signal("eval", lambda);
-            }
-
-            // Recursively checking sub folders.
-            foreach (var idxFolder in folderService.ListFolders(folder))
-            {
-                ExecuteHyperlambdaFilesRecursively(app, idxFolder);
-            }
         }
 
         /*
