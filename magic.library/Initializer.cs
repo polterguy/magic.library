@@ -516,10 +516,7 @@ namespace magic.library
         {
             if (configuration["magic:auth:secret"]?.Length > 50)
             {
-                /*
-                 * Starting task scheduler, passing in max concurrent jobs, defaulting to 8 if no
-                 * configuration value is found.
-                 */
+                // Starting task scheduler.
                 app.ApplicationServices.GetService<ITaskScheduler>()
                     .StartAsync()
                     .GetAwaiter()
