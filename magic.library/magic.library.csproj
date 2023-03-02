@@ -70,6 +70,7 @@
     <PackageReference Include="magic.lambda.strings" Version="15.5.13" />
     <PackageReference Include="magic.lambda.dates" Version="15.5.0" />
     <PackageReference Include="magic.lambda.validators" Version="15.5.0" />
+    <PackageReference Include="magic.lambda.pdf" Version="15.5.0" />
     <PackageReference Include="magic.signals" Version="15.5.0" />
     <PackageReference Include="magic.lambda.auth" Version="15.5.0" />
     <PackageReference Include="magic.endpoint" Version="15.5.0" />
