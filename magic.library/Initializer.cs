@@ -173,11 +173,17 @@ namespace magic.library
         {
             if (string.IsNullOrEmpty(configuration["magic:trusted-certs"]))
             {
-                services.AddHttpClient();
+                services.AddHttpClient(Options.DefaultName, client => {
+                    client.Timeout = TimeSpan.FromSeconds(300);
+                });
             }
             else
             {
-                services.AddHttpClient(Options.DefaultName).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                services
+                    .AddHttpClient(Options.DefaultName, client => {
+                        client.Timeout = TimeSpan.FromSeconds(300);
+                    })
+                    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
                 {
                     ClientCertificateOptions = ClientCertificateOption.Manual,
                     ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
