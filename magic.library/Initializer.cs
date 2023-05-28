@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Linq;
 using System.Net.Http;
@@ -185,6 +186,7 @@ namespace magic.library
                     })
                     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
                 {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
                     ClientCertificateOptions = ClientCertificateOption.Manual,
                     ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
                     {
