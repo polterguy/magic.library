@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using magic.node.services;
 using magic.node.contracts;
+using magic.lambda.sqlite;
 using magic.lambda.sockets;
 using magic.node.extensions;
 using magic.lambda.threading;
@@ -74,6 +75,7 @@ namespace magic.library
             // Wiring up Magic specific services.
             services.AddMagicSignals();
             services.AddMagicData(configuration);
+            services.AddMagicSQLite(configuration);
             services.AddMagicFileServices(configuration);
             services.AddMagicConfiguration();
             services.AddMagicCaching(configuration);
@@ -102,6 +104,16 @@ namespace magic.library
         public static void AddMagicData(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDataSettings, AppSettingsDataSettings>();
+        }
+
+        /// <summary>
+        /// Wires up magic.lambda.sqlite to allow us to use plugins in SQLite.
+        /// </summary>
+        /// <param name="services">Your service collection.</param>
+        /// <param name="configuration">Your configuration settings.</param>
+        public static void AddMagicSQLite(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<IInitializer, SQLiteInitializer>();
         }
 
         /// <summary>
