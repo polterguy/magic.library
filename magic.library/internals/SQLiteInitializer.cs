@@ -26,14 +26,11 @@ namespace magic.library.internals
                     var cmdTxt = "";
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                     {
-                        cmdTxt = @"select load_extension(""./sqlite-plugins/deno-linux-x86_64.vector0"", ""sqlite3_vector_init"");select load_extension(""./sqlite-plugins/deno-linux-x86_64.vss0"", ""sqlite3_vss_init"");";
+                        cmdTxt = @"select load_extension(""./sqlite-plugins/vector0"", ""sqlite3_vector_init"");select load_extension(""./sqlite-plugins/vss0"", ""sqlite3_vss_init"");";
                     }
                     else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
-                        if (RuntimeInformation.ProcessArchitecture == Architecture.Arm || RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
-                            cmdTxt = @"select load_extension(""./sqlite-plugins/deno-darwin-aarch64.vector0"", ""sqlite3_vector_init"");select load_extension(""./sqlite-plugins/deno-darwin-aarch64.vss0"", ""sqlite3_vss_init"");";
-                        else
-                            cmdTxt = @"select load_extension(""./sqlite-plugins/deno-darwin-x86_64.vector0"", ""sqlite3_vector_init"");select load_extension(""./sqlite-plugins/deno-darwin-x86_64.vss0"", ""sqlite3_vss_init"");";
+                        cmdTxt = @"select load_extension(""./sqlite-plugins/vector0"", ""sqlite3_vector_init"");select load_extension(""./sqlite-plugins/vss0"", ""sqlite3_vss_init"");";
                     }
                     cmd.CommandText = cmdTxt;
                     cmd.ExecuteNonQuery();
