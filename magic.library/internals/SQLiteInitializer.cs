@@ -13,8 +13,6 @@ namespace magic.library.internals
      */
     internal class SQLiteInitializer : IInitializer
     {
-        static bool _hasLoadedPlugin = false;
-
         public void Initialize(SqliteConnection connection)
         {
             connection.EnableExtensions();
