@@ -428,7 +428,6 @@ namespace magic.library
         /// <param name="configuration">Configuration object.</param>
         public static void AddMagicLambda(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<ThreadRunner>();
             services.Configure<LambdaSettings>(configuration.GetSection("magic:lambda"));
             services.AddTransient<LambdaSettings>((svc) => svc.GetService<IOptionsMonitor<LambdaSettings>>().CurrentValue);
         }
