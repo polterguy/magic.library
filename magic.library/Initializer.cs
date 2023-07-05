@@ -188,12 +188,26 @@ namespace magic.library
             {
                 services.AddHttpClient(Options.DefaultName, client => {
                     client.Timeout = TimeSpan.FromSeconds(300);
+                }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                    ClientCertificateOptions = ClientCertificateOption.Manual,
+                    ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
+                    {
+                        if (policyErrors == System.Net.Security.SslPolicyErrors.None)
+                            return true;
+                        var trusted = configuration["magic:trusted-certs"];
+                        if (trusted == "*")
+                            return true;
+                        if (trusted.Split(',').Select(x => x.Trim()).Contains(cert.Thumbprint))
+                            return true;
+                        return false;
+                    }
                 });
             }
             else
             {
-                services
-                    .AddHttpClient(Options.DefaultName, client => {
+                services.AddHttpClient(Options.DefaultName, client => {
                         client.Timeout = TimeSpan.FromSeconds(300);
                     })
                     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
