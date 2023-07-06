@@ -10,7 +10,7 @@
     <Description>Helper project for Magic to wire up everything easily by simply adding one package, and invoking two simple methods. When using Magic, this is (probably) the only package you should actually add, since this package pulls in everything else you'll need automatically, and wires up everything sanely by default. To use package go to https://polterguy.github.io</Description>
     <PackageProjectUrl>https://ainiro.io</PackageProjectUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>16.6.12</PackageVersion>
+    <PackageVersion>16.6.13</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library</RepositoryUrl>
@@ -47,7 +47,7 @@
     <PackageReference Include="magic.lambda.config" Version="16.4.1" />
     <PackageReference Include="magic.lambda.image" Version="16.4.1" />
     <PackageReference Include="magic.lambda.crypto" Version="16.4.1" />
-    <PackageReference Include="magic.lambda.http" Version="16.4.1" />
+    <PackageReference Include="magic.lambda.http" Version="16.6.13" />
     <PackageReference Include="magic.lambda.hyperlambda" Version="16.4.1" />
     <PackageReference Include="magic.lambda.io" Version="16.4.1" />
     <PackageReference Include="magic.lambda.csv" Version="16.4.1" />
