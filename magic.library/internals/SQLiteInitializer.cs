@@ -3,7 +3,7 @@
  */
 
 using System.Runtime.InteropServices;
-using Microsoft.Data.Sqlite;
+using Aista.Data.Sqlite;
 using magic.lambda.sqlite;
 
 namespace magic.library.internals

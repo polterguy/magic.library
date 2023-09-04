@@ -62,7 +62,7 @@
     <PackageReference Include="magic.lambda.mysql" Version="16.7.0" />
     <PackageReference Include="magic.lambda.odbc" Version="16.7.0" />
     <PackageReference Include="magic.lambda.pgsql" Version="16.7.0" />
-    <PackageReference Include="magic.lambda.sqlite" Version="16.7.0" />
+    <PackageReference Include="magic.lambda.sqlite" Version="16.7.1" />
     <PackageReference Include="magic.lambda.mssql" Version="16.7.0" />
     <PackageReference Include="magic.lambda.openai" Version="16.7.0" />
     <PackageReference Include="magic.lambda.scheduler" Version="16.7.0" />
