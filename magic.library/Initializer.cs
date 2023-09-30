@@ -581,7 +581,10 @@ namespace magic.library
                         .AllowCredentials()
                         .WithOrigins(origins.Split(',').Select(x => x.Trim()).ToArray()));
             else
-                app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()); //NOSONAR
+                app
+                    .UseCors(x => x.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .SetIsOriginAllowed(origin => true)); //NOSONAR
         }
 
         #endregion
