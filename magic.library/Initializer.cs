@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
@@ -19,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 using magic.node.services;
 using magic.node.contracts;
 using magic.lambda.sqlite;
@@ -45,7 +48,6 @@ using magic.lambda.scheduler.contracts;
 using magic.node.extensions.hyperlambda;
 using sig_serv = magic.signals.services;
 using magic.lambda.mime.contracts.settings;
-using Microsoft.AspNetCore.Http;
 
 namespace magic.library
 {
@@ -64,7 +66,7 @@ namespace magic.library
         public static void AddMagic(this IServiceCollection services, IConfiguration configuration)
         {
             // Adding global configuration to services collection.
-            services.AddSingleton<IConfiguration>(svc => configuration);
+            services.AddSingleton(svc => configuration);
 
             // Making sure we add all controllers in AppDomain and use Newtonsoft JSON as JSON library.
             services.AddControllers().AddNewtonsoftJson();
@@ -262,7 +264,7 @@ namespace magic.library
         public static void AddMagicSignals(this IServiceCollection services)
         {
             /*
-             * Loading all assemblies that are not loaded up for some reasons.
+             * Loading all assemblies from current AppDomain.
              */
             var loadedPaths = AppDomain.CurrentDomain
                 .GetAssemblies()
@@ -613,14 +615,12 @@ namespace magic.library
          * abstract. Adds all these as transient services, and returns all of
          * these types to caller.
          */
-        static IEnumerable<Type> Slots(IServiceCollection services)
+        internal static IEnumerable<Type> Slots(IServiceCollection services)
         {
-            var type1 = typeof(ISlot);
-            var type2 = typeof(ISlotAsync);
             var result = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(x => !x.IsDynamic && !x.FullName.StartsWith("Microsoft", StringComparison.InvariantCulture))
                 .SelectMany(s => s.GetTypes())
-                .Where(p => (type1.IsAssignableFrom(p) || type2.IsAssignableFrom(p)) && !p.IsInterface && !p.IsAbstract);
+                .Where(p => (typeof(ISlot).IsAssignableFrom(p) || typeof(ISlotAsync).IsAssignableFrom(p)) && !p.IsInterface && !p.IsAbstract);
 
             foreach (var idx in result)
             {
