@@ -27,7 +27,6 @@ using magic.node.contracts;
 using magic.lambda.sqlite;
 using magic.lambda.sockets;
 using magic.node.extensions;
-using magic.lambda.threading;
 using magic.signals.services;
 using magic.lambda.contracts;
 using magic.signals.contracts;
@@ -35,10 +34,10 @@ using magic.endpoint.services;
 using magic.library.internals;
 using magic.endpoint.contracts;
 using magic.lambda.auth.services;
-using magic.lambda.mime.services;
+using magic.lambda.mail.services;
 using magic.lambda.http.contracts;
 using magic.lambda.auth.contracts;
-using magic.lambda.mime.contracts;
+using magic.lambda.mail.contracts;
 using magic.data.common.contracts;
 using magic.lambda.config.services;
 using magic.lambda.logging.contracts;
@@ -47,7 +46,7 @@ using magic.lambda.scheduler.services;
 using magic.lambda.scheduler.contracts;
 using magic.node.extensions.hyperlambda;
 using sig_serv = magic.signals.services;
-using magic.lambda.mime.contracts.settings;
+using magic.lambda.mail.contracts.settings;
 
 namespace magic.library
 {
