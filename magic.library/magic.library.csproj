@@ -10,7 +10,7 @@
     <Description>Helper project for Magic to wire up everything easily by simply adding one package, and invoking two simple methods. When using Magic, this is (probably) the only package you should actually add, since this package pulls in everything else you'll need automatically, and wires up everything sanely by default. To use package go to https://polterguy.github.io</Description>
     <PackageProjectUrl>https://ainiro.io</PackageProjectUrl>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>16.11.5</PackageVersion>
+    <PackageVersion>16.11.6</PackageVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/polterguy/magic.library</RepositoryUrl>
@@ -74,7 +74,7 @@
     <PackageReference Include="magic.signals" Version="16.11.5" />
     <PackageReference Include="magic.lambda.auth" Version="16.11.5" />
     <PackageReference Include="magic.endpoint" Version="16.11.5" />
-    <PackageReference Include="magic.endpoint.services" Version="16.11.5" />
+    <PackageReference Include="magic.endpoint.services" Version="16.11.6" />
     <PackageReference Include="magic.lambda.sockets" Version="16.11.5" />
     <PackageReference Include="magic.lambda.threading" Version="16.11.5" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
