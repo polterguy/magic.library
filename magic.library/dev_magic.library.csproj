@@ -44,7 +44,6 @@
     <ProjectReference Include="..\..\magic.lambda.sockets\magic.lambda.sockets\dev_magic.lambda.sockets.csproj" />
     <ProjectReference Include="..\..\magic.lambda.system\magic.lambda.system\dev_magic.lambda.system.csproj" />
     <ProjectReference Include="..\..\magic.lambda.threading\magic.lambda.threading\dev_magic.lambda.threading.csproj" />
-    <ProjectReference Include="..\..\magic.data.cql\magic.data.cql\dev_magic.data.cql.csproj" />
     <ProjectReference Include="..\..\magic.lambda.cql\magic.lambda.cql\dev_magic.lambda.cql.csproj" />
     <ProjectReference Include="..\..\magic.lambda.xml\magic.lambda.xml\dev_magic.lambda.xml.csproj" />
     <ProjectReference Include="..\..\magic.lambda.pdf\magic.lambda.pdf\dev_magic.lambda.pdf.csproj" />
