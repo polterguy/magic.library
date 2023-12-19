@@ -171,7 +171,7 @@ namespace magic.library.internals
              * Hence, we've got no other options than to simply turn on everything if no frontends are declared
              * in configuration.
              */
-            context.Response.Headers.Add("Access-Control-Allow-Origin", "*"); //NOSONAR
+            context.Response.Headers["Access-Control-Allow-Origin"] = "*"; //NOSONAR
 
             // Writing exception to response and returning success.
             await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
@@ -232,7 +232,7 @@ namespace magic.library.internals
              * Hence, we've got no other options than to simply turn on everything if no frontends are declared
              * in configuration.
              */
-            context.Response.Headers.Add("Access-Control-Allow-Origin", "*"); //NOSONAR
+            context.Response.Headers["Access-Control-Allow-Origin"] = "*"; //NOSONAR
 
             await context.Response.WriteAsync(response.ToString(Newtonsoft.Json.Formatting.Indented));
         }
