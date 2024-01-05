@@ -1,10 +1,9 @@
-
 # magic.library - Tying Magic together
 
 This project helps you to wire up everything related to Magic. Normally you'd use it simply like the following from
-your startup class in your .Net 6 Web API project.
+your startup class in your .Net 8 Web API project.
 
-```
+```csharp
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -117,4 +116,4 @@ The source code for this repository can be found at [github.com/polterguy/magic.
 
 ## Copyright and maintenance
 
-The projects is copyright of Aista, Ltd 2021 - 2023, and professionally maintained by [AINIRO your friendly ChatGPT website chatbot vendor](https://ainiro.io).
+The projects is copyright Thomas Hansen 2023 - 2024, and professionally maintained by [AINIRO.IO](https://ainiro.io).
